@@ -1,0 +1,63 @@
+Text-Bidi
+
+This is a perl interface to the libfribidi library that implements the 
+Unicode bidi algorithm. The bidi algorithm is a specification for displaying 
+text that consists of both left-to-right and right-to-left written languages.
+
+The package was complete reimplemented in version 2.0, and the interface is 
+incompatible with older versions.
+
+The package also includes an extension for the urxvt (rxvt-unicode) terminal 
+to display bidi text correctly. It is located in misc/bidi.
+
+PREREQUISITES
+
+The GNU fribidi library should be installed prior to installing this module.  
+It is available from http://fribidi.org .
+
+To re-build the interface files, swig is required. However, the module comes 
+with these files, so swig is not necessary. Swig is available at 
+http://www.swig.org . Version 2.0.10 was used to build the interface files.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+    perl Makefile.PL
+    make
+    make install
+
+As mentioned above, fribidi should already be installed.
+
+To install the extension for urxvt, simply put it in the urxvt's search path 
+for perl extensions, and add it to the perl-ext-common resource. See 
+urxvtperl(1) for details.
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the perldoc 
+command.
+
+    perldoc Text::Bidi
+
+You can also look for information at:
+
+    Search CPAN
+        http://search.cpan.org/dist/Text-Bidi
+
+    CPAN Request Tracker:
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-Bidi
+
+    AnnoCPAN, annotated CPAN documentation:
+        http://annocpan.org/dist/Text-Bidi
+
+    CPAN Ratings:
+        http://cpanratings.perl.org/d/Text-Bidi
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2006-2013 Moshe Kamensky
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

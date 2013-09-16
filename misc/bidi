@@ -1,0 +1,59 @@
+#! perl
+# $Id$
+# Created: Tue 21 Aug 2012 12:49:09 PM IDT
+# Last Changed: Tue 27 Aug 2013 04:58:16 PM IDT
+
+# make urxvt present bidi correctly
+
+use Text::Bidi qw(log2vis is_bidi);
+
+my $split = "\x{2502}";
+my $ls = length($split);
+
+sub on_refresh_begin {
+    my ($self) = @_;
+    my ($crow, $ccol) = $self->screen_cur;
+    for my $i ( 0..$self->nrow-1 ) {
+        my $l = $self->ROW_t($i);
+        # for speed
+        next unless is_bidi($l);
+        my $r = $self->ROW_r($i);
+        my @l = split $split, $l;
+        my (@res, @levels, @map);
+        my $off = 0;
+        for my $part ( @l ) {
+            my ($p, $v) = log2vis($part, undef, undef);
+            push @res, $v;
+            push @levels, @{$p->levels}, 0;
+            push @map, map { $_+$off } @{$p->map};
+            $off += length($part);
+            push @map, $off..$off+$ls-1;
+            $off += $ls;
+        }
+        pop @map foreach 0..$ls-1;
+        my $res = join($split, @res);
+        # fake cursor
+        if ( $crow == $i ) {
+            $r->[$ccol] |= urxvt::RS_RVid unless $map[$ccol]==$ccol;
+        }
+        my @newr = (@$r)[@map];
+        my $n = 0;
+        $self->{'text'}[$i] = $self->ROW_t($i, $res);
+        $self->{'rend'}[$i] = $self->ROW_r($i, \@newr);
+    }
+    ()
+}
+
+sub on_refresh_end {
+    my ($self) = @_;
+    return unless defined $self->{'text'};
+    foreach (0..$self->nrow-1 ) {
+        next unless defined $self->{'text'}[$_];
+        $self->ROW_t($_, $self->{'text'}[$_]);
+        $self->ROW_r($_, $self->{'rend'}[$_]);
+    }
+    delete $self->{'text'};
+    delete $self->{'rend'};
+    ()
+}
+

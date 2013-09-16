@@ -1,0 +1,41 @@
+Revision history for Text-Bidi
+        * More changes to Makefile.PL
+2.02    12.09.2013
+        Fixed Makefile.PL
+        
+2.01    11.09.2013
+        * Refactored Text::Bidi::Array::* to have a common base class 
+          Text::Bidi::Array
+        * Significantly improved the documentation of Text::Bidi::Array*
+        * Fixed a bug in Text::Bidi::Array::Long --- now returns the correct 
+          size
+        * Added loading tests for Text::Bidi::Array*
+        * Removed "no warnings 'experimental'", since this caused tests to 
+          fail on older versions of perl.
+        * Added information about the bidi extension for urxvt to the README 
+          file
+2.00    10.09.2013
+        Almost completely rewritten, mostly due to the changes in libfribidi.  
+        The interface has changed as well, so this version is incompatible 
+        with the previous ones.
+
+0.04    07.02.2008
+        * Changed the build system to use ExtUtils::PkgConfig (if available), 
+          to find the correct compilation flags (this is required since the 
+          new version of libfribidi may need glib to build.)
+
+0.03    18.01.2007
+        * The PUSH macros caused some weird results, replaced with my own 
+          macros
+        * Apparently, Newx did not exist before 5.8.8, defined it if does not 
+          exist
+
+0.02    17.01.2007
+        * Fixed memory leak in remove_bidi_marks when called with two 
+          arguments
+        * Fixed bug when calling log2vis with 2 arguments
+        * Changed the typemaps to use more perlapi macros (XPUSH, etc.)
+
+0.01    28.08.2006
+        First version
+

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Id$
+# PODNAME: fribidi.pl
 
 use 5.10.0;
 use warnings;

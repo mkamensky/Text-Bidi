@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Fri 20 Sep 2013 08:58:32 AM IDT
+# Last Changed: Fri 20 Sep 2013 10:43:32 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -121,7 +121,7 @@ for my $f ( qw(len unicode types levels mirrored map) ) {
 
 Returns true if the direction of the paragraph is C<RTL> (right to left).
 
-=method
+=cut
 
 sub is_rtl { $_[0]->dir == $Text::Bidi::Par::RTL }
 
@@ -198,10 +198,12 @@ sub visual {
 
 1;
 
-__END__
 
 =head1 SEE ALSO
 
 L<Text::Bidi>
 
+=cut
+
+# COPYRIGHT
 

@@ -325,7 +325,7 @@ sub reorder_map {
     ($elout, $mout)
 }
 
-=function log2vis()
+=func log2vis()
 
     my $visual = log2vis($logical,...);
 
@@ -344,7 +344,7 @@ sub log2vis {
     ($p, $res)
 }
 
-=function is_bidi()
+=func is_bidi()
 
     my $bidi = is_bidi($logical);
 
@@ -356,7 +356,7 @@ helps if we want to short-circuit.
 
 sub is_bidi { $_[0] =~ /\p{bc=R}/ }
 
-=function get_mirror_char()
+=func get_mirror_char()
 
     my $mir = get_mirror_char('['); # $mir == ']'
 
@@ -390,8 +390,11 @@ L<The fribidi library|http://fribidi.org/>
 
 L<Swig|http://www.swig.org>
 
-The unicode bidi algorithm: L<http://www.unicode.org/unicode/reports/tr9/>
+L<The unicode bidi algorithm|http://www.unicode.org/unicode/reports/tr9/>
 
 =cut
 
 1; # End of Text::Bidi
+
+# COPYRIGHT
+

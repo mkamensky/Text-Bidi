@@ -40,9 +40,6 @@ my ##{
 %WriteMakefileArgs = (%WriteMakefileArgs,
     INC => $cflags,
     LIBS => $libs,
-    META_MERGE => { no_index => {package => [qw(Text::Bidi::privatec 
-                                                Text::Bidi::private)]},
-                    keywords => [qw(bidi rtl hebrew arabic)]},
     OBJECT => 'private.o',
 );
 

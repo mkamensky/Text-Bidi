@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Fri 20 Sep 2013 10:43:32 AM IDT
+# Last Changed: Fri 20 Sep 2013 11:43:43 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -203,7 +203,5 @@ sub visual {
 
 L<Text::Bidi>
 
-=cut
 
-# COPYRIGHT
 

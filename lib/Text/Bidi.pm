@@ -396,5 +396,3 @@ L<The unicode bidi algorithm|http://www.unicode.org/unicode/reports/tr9/>
 
 1; # End of Text::Bidi
 
-# COPYRIGHT
-

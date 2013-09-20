@@ -18,6 +18,7 @@ if ( %fribidi ) {
 } else {
     unless ( -r '/usr/include/fribidi/fribidi.h' ) {
         die <<'EOF'
+
 It seems that fribidi is missing. 
 
 fribidi should be installed prior to the installation of this module.
@@ -42,7 +43,7 @@ my ##{
     META_MERGE => { no_index => {package => [qw(Text::Bidi::privatec 
                                                 Text::Bidi::private)]},
                     keywords => [qw(bidi rtl hebrew arabic)]},
-    OBJECT => 'src/private.o',
+    OBJECT => 'private.o',
 );
 
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
@@ -78,11 +79,11 @@ WriteMakefile(%WriteMakefileArgs);
 
 sub MY::postamble {
     <<EOF;
-src/private.c: swig/fribidi.i
+private.c: swig/fribidi.i
 	-/usr/bin/swig -perl -Wall -I/usr/include $cflags -outdir lib/Text/Bidi/ -o \$@ \$<
 
 swig-clean: clean
-	-rm src/private.c lib/Text/Bidi/private.pm
+	-rm private.c lib/Text/Bidi/private.pm
 
 EOF
 }

@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
 
 # PODNAME: fribidi.pl
+# ABSTRACT: Convert logical text to visual, via the unicode bidi algorithm
 
 use 5.10.0;
 use warnings;
 use integer;
+use strict;
 use IPC::System::Simple qw(system);
 use autodie qw(:all);
 
@@ -21,9 +23,10 @@ $Opts{'break'} = ' ' if defined($Opts{'break'}) and ($Opts{'break'} eq '');
 use Text::Bidi::Paragraph;
 #use Carp::Always;
 
-# read paragraphs
-$/ = '';
-my $flags = { break => $Opts{'break'} } if defined $Opts{'break'};
+# read paragraphs (and make perlcritic happy with 'local')
+local $/ = '';
+my $flags;
+$flags = { break => $Opts{'break'} } if defined $Opts{'break'};
 my $dir = $Opts{'rtl'} ? $Text::Bidi::Par::RTL 
                        : $Opts{'ltr'} ? $Text::Bidi::Par::LTR : undef;
 while (<>) {
@@ -43,9 +46,6 @@ while (<>) {
 
 # start of POD
 
-=head1 NAME
-
-fribidi.pl - Convert logical text to visual, via the unicode bidi algorithm
 
 =head1 SYNOPSIS
 
@@ -110,15 +110,6 @@ L<Text::Bidi> and provide a usage example.
 =head1 SEE ALSO
 
 L<Text::Bidi>, L<Text::Bidi::Paragraph>, fribidi(1)
-
-=head1 AUTHOR
-
-Moshe Kamensky  (E<lt>kamensky@cpan.org<gt>) - Copyright (c) 2013
-
-=head1 LICENSE
-
-This program is free software. You may copy or 
-redistribute it under the same terms as Perl itself.
 
 =cut
 

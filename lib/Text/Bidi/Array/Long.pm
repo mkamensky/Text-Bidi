@@ -1,10 +1,13 @@
-# $Id$
 # Created: Tue 27 Aug 2013 06:12:39 PM IDT
-# Last Changed: Wed 11 Sep 2013 11:47:05 AM IDT
+# Last Changed: Fri 20 Sep 2013 08:58:17 AM IDT
 
-=head1 NAME
+use 5.10.0;
+use warnings;
+use integer;
+use strict;
 
-Text::Bidi::Array::Long - Dual-life long arrays
+package Text::Bidi::Array::Long;
+# ABSTRACT: Dual-life long arrays
 
 =head1 SYNOPSIS
 
@@ -27,16 +30,7 @@ machine.
 
 =cut
 
-package Text::Bidi::Array::Long;
-
-use 5.10.0;
-use warnings;
-use integer;
-use strict;
 use Carp;
-
-
-our $VERSION = 1.1;
 
 use Text::Bidi::Array;
 use base qw(Text::Bidi::Array);
@@ -85,17 +79,4 @@ sub STORESIZE {
 }
 
 1;
-
-__END__
-
-=head1 AUTHOR
-
-Moshe Kamensky  (E<lt>kamensky@cpan.orgE<gt>) - Copyright (c) 2013
-
-=head1 LICENSE
-
-This program is free software. You may copy or 
-redistribute it under the same terms as Perl itself.
-
-=cut
 

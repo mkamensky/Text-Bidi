@@ -1,12 +1,14 @@
-# $Id$
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Wed 11 Sep 2013 11:49:51 AM IDT
+# Last Changed: Fri 20 Sep 2013 08:58:32 AM IDT
+
+use 5.10.0;
+use warnings;
+#no warnings 'experimental';
+use integer;
+use strict;
 
 package Text::Bidi::Paragraph;
-
-=head1 NAME
-
-Text::Bidi::Paragraph - Run the bidi algorithm on one paragraph
+# ABSTRACT: Run the bidi algorithm on one paragraph
 
 =head1 SYNOPSIS
 
@@ -38,20 +40,9 @@ reordering.
 
 =cut
 
-use 5.10.0;
-use warnings;
-#no warnings 'experimental';
-use integer;
-use strict;
-
 use Text::Bidi;
 
-our $VERSION = 2.01;
-
-
-=head1 METHODS
-
-=head2 new()
+=method new()
 
     my $par = new Text::Bidi::Paragraph $logical, ...;
 
@@ -79,33 +70,33 @@ sub new {
     $self
 }
 
-=head2 par()
+=method par()
 
     my $logical = $par->par;
 
 Returns the logical (input) text corresponding to this paragraph.
 
-=head2 dir()
+=method dir()
 
     my $dir = $par->dir;
 
 Returns the direction of this paragraph, a constant in the 
 C<$Text::Bidi::Par::> package.
 
-=head2 len()
+=method len()
 
     my $len = $par->len;
 
 The length of this paragraph.
 
-=head2 types()
+=method types()
 
     my $types = $par->types;
 
 The Bidi types of the characters in this paragraph. Each element of 
 C<@$types> is a constant in the C<$Text::Bidi::Type::> package.
 
-=head2 levels()
+=method levels()
 
     my $levels = $par->levels;
 
@@ -124,13 +115,13 @@ for my $f ( qw(len unicode types levels mirrored map) ) {
     *$f = sub { $_[0]->{"_$f"} };
 }
 
-=head2 is_rtl()
+=method is_rtl()
 
     my $rtl = $par->is_rtl;
 
 Returns true if the direction of the paragraph is C<RTL> (right to left).
 
-=cut
+=method
 
 sub is_rtl { $_[0]->dir == $Text::Bidi::Par::RTL }
 
@@ -151,7 +142,7 @@ sub init {
     $self->{'_par'} = [split '', $self->_mirpar ];
 }
 
-=head2 visual()
+=method visual()
 
     my $visual = $par->visual($offset, $length, $flags);
 
@@ -213,14 +204,4 @@ __END__
 
 L<Text::Bidi>
 
-=head1 AUTHOR
-
-Moshe Kamensky  (E<lt>kamensky@cpan.orgE<gt>) - Copyright (c) 2013
-
-=head1 LICENSE
-
-This program is free software. You may copy or 
-redistribute it under the same terms as Perl itself.
-
-=cut
 

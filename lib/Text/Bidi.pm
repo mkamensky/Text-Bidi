@@ -1,27 +1,19 @@
-package Text::Bidi;
-
 use 5.10.0;
 use warnings;
 #no warnings 'experimental';
 use strict 'vars';
+
+package Text::Bidi;
+# ABSTRACT: Unicode bidi algorithm using libfribidi
+
 use Exporter;
 use base qw(Exporter);
 use Carp;
-
-=head1 NAME
-
-Text::Bidi - Unicode bidi algorithm using libfribidi
-
-=cut
-
-our $VERSION = 2.02;
-
 
 use Text::Bidi::private;
 use Text::Bidi::Array::Byte;
 use Text::Bidi::Array::Long;
 use Encode qw(encode decode);
-
 
 =head1 SYNOPSIS
 
@@ -333,9 +325,7 @@ sub reorder_map {
     ($elout, $mout)
 }
 
-=head1 FUNCTIONS
-
-=head2 log2vis()
+=function log2vis()
 
     my $visual = log2vis($logical,...);
 
@@ -354,7 +344,7 @@ sub log2vis {
     ($p, $res)
 }
 
-=head2 is_bidi()
+=function is_bidi()
 
     my $bidi = is_bidi($logical);
 
@@ -366,7 +356,7 @@ helps if we want to short-circuit.
 
 sub is_bidi { $_[0] =~ /\p{bc=R}/ }
 
-=head2 get_mirror_char()
+=function get_mirror_char()
 
     my $mir = get_mirror_char('['); # $mir == ']'
 
@@ -385,7 +375,7 @@ sub get_mirror_char {
 
 =head1 BUGS
 
-There are no tests for any of this.
+There are no real tests for any of this.
 
 Shaping is not supported (probably), since I don't know what it is. Help 
 welcome!
@@ -396,23 +386,11 @@ L<Text::Bidi::Paragraph>
 
 L<Encode>
 
-The fribidi library: L<http://fribidi.org/>, 
-L<http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/>
+L<The fribidi library|http://fribidi.org/>
 
-Swig: L<http://www.swig.org>
+L<Swig|http://www.swig.org>
 
 The unicode bidi algorithm: L<http://www.unicode.org/unicode/reports/tr9/>
-
-=head1 AUTHOR
-
-Moshe Kamensky, L<mailto:kamensky@cpan.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006-2013 Moshe Kamensky, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut
 

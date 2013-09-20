@@ -1,10 +1,13 @@
-# $Id$
 # Created: Wed 11 Sep 2013 09:47:56 AM IDT
-# Last Changed: Wed 11 Sep 2013 11:36:45 AM IDT
+# Last Changed: Fri 20 Sep 2013 08:57:27 AM IDT
 
-=head1 NAME
+use 5.10.0;
+use warnings;
+use integer;
+use strict;
 
-Text::Bidi::Array - Base class for dual life arrays
+package Text::Bidi::Array;
+# ABSTRACT: Base class for dual life arrays
 
 =head1 SYNOPSIS
 
@@ -26,15 +29,7 @@ underlying fribidi library, but could be of independent interest.
 
 =cut
 
-package Text::Bidi::Array;
-
-use 5.10.0;
-use warnings;
-use integer;
-use strict;
 use Carp;
-
-our $VERSION = 1.0;
 
 use Tie::Array;
 use base qw(Tie::Array);
@@ -150,14 +145,4 @@ sub CLEAR {
 
 1;
 
-=head1 AUTHOR
-
-Moshe Kamensky  (E<lt>kamensky@cpan.org<gt>) - Copyright (c) 2013
-
-=head1 LICENSE
-
-This program is free software. You may copy or 
-redistribute it under the same terms as Perl itself.
-
-=cut
 

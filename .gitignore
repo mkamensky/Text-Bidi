@@ -15,4 +15,8 @@ MYMETA.yml
 nytprof.out
 pm_to_blib
 t/text/
+cpanfile
+Text-Bidi*tar.gz
+Text-Bidi-*/
+
 

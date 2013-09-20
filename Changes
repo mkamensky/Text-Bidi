@@ -1,5 +1,7 @@
 Revision history for Text-Bidi
 {{$NEXT}}
+
+2.03      2013-09-20 12:09:39 Asia/Jerusalem
         * More changes to Makefile.PL
 2.02    12.09.2013
         Fixed Makefile.PL

@@ -146,6 +146,18 @@ sub S(\@) {
     $Global
 }
 
+=method new
+
+    $tb = new Text::Bidi [tie_byte => ..., tie_long => ...];
+
+Create a new L<Text::Bidi> object. If the I<tie_byte> or I<tie_long> options 
+are given, they should be the names (strings) of the classes used as dual 
+life arrays, most probably derived class of L<Text::Bidi::Array::Byte> and 
+L<Text::Bidi::Array::Long>, respectively.
+
+This method is probably of little interest for standard (procedural) use.
+
+=cut
 
 sub new {
     my $class = shift;
@@ -157,6 +169,10 @@ sub new {
     bless $self => $class
 }
 
+=for Pod::Coverage tie_byte tie_long
+
+=cut
+
 sub tie_byte {
     my $self = shift;
     $self->{'tie_byte'}->new(@_)
@@ -167,6 +183,15 @@ sub tie_long {
     $self->{'tie_long'}->new(@_)
 }
 
+=method utf8_to_internal
+
+    $la = $tb->utf8_to_internal($str);
+
+Convert the Perl string I<$str> into the representation used by libfribidi.  
+The result will be a L<Text::Bidi::Array::Long>.
+
+=cut
+
 sub utf8_to_internal {
     my $self = S(@_);
     my $str = shift;
@@ -174,6 +199,16 @@ sub utf8_to_internal {
       Text::Bidi::private::utf8_to_internal(encode('utf8', $str));
     $self->tie_long($res)
 }
+
+=method internal_to_utf8
+
+    $str = $tb->internal_to_utf8($la);
+
+Convert the long array I<$la>, representing a string encoded in to format 
+used by libfribidi, into a Perl string. The array I<$la> can be either a 
+L<Text::Bidi::Array::Long>, or anything that can be used to construct it.
+
+=cut
 
 sub internal_to_utf8 {
     my $self = S(@_);
@@ -183,9 +218,9 @@ sub internal_to_utf8 {
     decode('utf8', $r)
 }
 
-=func get_bidi_types
+=method get_bidi_types
 
-    $types = get_bidi_types($internal);
+    $types = $tb->get_bidi_types($internal);
 
 Returns a L<Text::Bidi::Array::Long> with the list of Bidi types of the text 
 given by $internal, a representation of the paragraph text, as returned by 
@@ -200,12 +235,13 @@ sub get_bidi_types {
     $self->tie_long($t)
 }
 
-=func get_bidi_type_name
+=method get_bidi_type_name
 
-    say get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
+    say $tb->get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
 
 Return the string representation of a Bidi character type, as in 
-fribidi_get_bidi_type_name(3).
+fribidi_get_bidi_type_name(3). Note that for the above example, one needs to 
+use L<Text::Bidi::Constants>.
 
 =cut
 
@@ -213,6 +249,16 @@ sub get_bidi_type_name {
     my $self = S(@_);
     Text::Bidi::private::get_bidi_type_name(@_)
 }
+
+=method get_joining_types
+
+    $types = $tb->get_joining_types($internal);
+
+Returns a L<Text::Bidi::Array::Byte> with the list of joining types of the 
+text given by $internal, a representation of the paragraph text, as returned 
+by L</utf8_to_internal>. Wraps fribidi_get_joining_types(3).
+
+=cut
 
 sub get_joining_types {
     my $self = S(@_);

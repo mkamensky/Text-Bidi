@@ -144,6 +144,7 @@ OUTSTR(char, utf8out);
 
 %apply int { FriBidiStrIndex }
 %apply unsigned long { FriBidiFlags, FriBidiParType, FriBidiCharType }
+%apply unsigned short { FriBidiJoiningType }
 
 
 %rename("%(strip:[fribidi_])s") "";

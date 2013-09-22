@@ -1,7 +1,7 @@
 
 use warnings;
 use integer;
-use strict;
+use strict 'vars';
 package Text::Bidi::Constants;
 # ABSTRACT: Constants for Text::Bidi
 

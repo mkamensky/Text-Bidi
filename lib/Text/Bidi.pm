@@ -100,7 +100,7 @@ essentially it. The rest of this documentation will probably be useful only
 to people who are familiar with I<libfribidi> and who wish to extend or 
 modify the module.
 
-=head2 The object oriented approach
+=head2 The object-oriented approach
 
 All functions here can be called using either a procedural or an object 
 oriented approach. For example, you may do either
@@ -114,10 +114,17 @@ or
 
 The advantages of the second form is that it is easier to move to a 
 sub-class, and that two or more objects with different parameters can be used 
-simultaneously.
+simultaneously. If you are interested in deriving from this class, please see 
+L</SUBCLASSING>.
 
-If you do sub-class this class, and want the procedural interface to use your 
-functions, put a line like
+=head1 SUBCLASSING
+
+The rest of the documentation is only interesting if you would like to derive 
+from this class. The methods listed under L</METHODS> are wrappers around the 
+similarly named functions in libfribidi, and may be useful for this purpose.
+
+If you do sub-class this class, and would like the procedural interface to 
+use your functions, put a line like
 
         $Text::Bidi::GlobalClass = __PACKAGE__;
 
@@ -266,10 +273,34 @@ sub get_joining_types {
     $self->tie_byte(Text::Bidi::private::get_joining_types($$u))
 }
 
+=method get_joining_type_name
+
+    say $tb->get_joining_type_name($Text::Bidi::Joining::U); # says 'U'
+
+Return the string representation of a joining character type, as in 
+fribidi_get_joining_type_name(3). Note that for the above example, one needs 
+to use L<Text::Bidi::Constants>.
+
+=cut
+
 sub get_joining_type_name {
     my $self = S(@_);
     Text::Bidi::private::get_joining_type_name(@_)
 }
+
+=method get_par_embedding_levels
+
+   ($odir, $lvl) = $tb->get_par_embedding_levels($types[, $dir]);
+
+Return the embedding levels of the characters, whose types are given by 
+I<$types>. I<$types> is a L<Text::Bidi::Array::Long> of Bidi types, as 
+returned by L</get_bidi_types>. I<$dir> is the base paragraph direction. If 
+not given, it defaults to C<FRIBIDI_PAR_ON> (neutral).
+
+The output is the resolved paragraph direction I<$odir>, and the 
+L<Text::Bidi::Array::Byte> array I<$lvl> of embedding levels.
+
+=cut
 
 sub get_par_embedding_levels {
     my $self = S(@_);
@@ -281,6 +312,18 @@ sub get_par_embedding_levels {
     ($par, $res)
 }
 
+=method mirrored
+
+    $mirrored = $tb->mirrored($lvl, $internal);
+
+Returns the internal representation of the paragraph, with mirroring applied.  
+The internal representation of the original paragraph (as returned by 
+L</utf8_to_internal>) should be passed in B<$internal>, while the embedding 
+levels (as returned by L</get_par_embedding_levels>) should be in B<$lvl>.  
+This method wraps fribidi_shape_mirroring(3).
+
+=cut
+
 sub mirrored {
     my $self = S(@_);
     my ($el, $u) = @_;
@@ -288,25 +331,85 @@ sub mirrored {
     my $res = $self->tie_long($r)
 }
 
+=for Pod::Coverage hash2flags
+
+=cut
+
 sub hash2flags {
     my ($self, $flags) = @_;
     my $res = 0;
     foreach ( keys %$flags ) {
         next unless $flags->{$_};
         next unless $_ eq uc;
-        my $v = 'Text::Bidi::private::FRIBIDI_FLAG_' . uc($_);
-        $res |= $$v;
+        $res |= ${"Text::Bidi::private::FRIBIDI_FLAG_$_"};
     }
     $res
 }
+
+=method reorder
+
+    $str = $tb->reorder($in, $map[, $offset[, $len]]);
+    say $tb->reorder([qw(A B C)], [2, 0, 1]); # says CAB
+
+View the array ref B<$map> as a permutation, and permute the list (of 
+characters) B<$in> according to it. The result is joined, to obtain a string. 
+If B<$offset> and B<$len> are given, returns only that part of the resulting 
+string.
+
+=cut
 
 sub reorder {
     my $self = S(@_);
     my ($str, $map, $off, $len) = @_;
     $off //= 0;
-    $len //= @$str;
+    $len //= @$str - $off;
     join('', (@$str)[@$map[$off..$off+$len-1]])
 }
+
+=method reorder_map
+
+    ($elout, $mout) = $tb->reorder_map($types, $offset, $len, $par,
+                                       $map, $el, $flags);
+
+Compute the reordering map for bidi types given by B<$types>, for the 
+interval starting with B<$offset> of length B<$len>. Note that this part of 
+the algorithm depends on the interval in an essential way. B<$types> is an 
+array of types, as computed by L</get_bidi_types>. The other arguments are 
+optional:
+
+=over
+
+=item B<$par>
+
+The base paragraph direction. Computed via L</get_par_embedding_levels> if 
+not defined.
+
+=item B<$map>
+
+An array ref (or a L<Text::Bidi::Array::Long>) from a previous call (with a 
+different interval). The method is called repeatedly for the same paragraph, 
+with different intervals, and the reordering map is updated for the given 
+interval. If not defined, initialised to the identity map.
+
+=item B<$el>
+
+The embedding levels. If not given, computed by a call to 
+L</get_par_embedding_levels>.
+
+=item B<$flags>
+
+A specification of flags, as described in fribidi_reorder_line(3). The flags 
+can be given either as a number (using C<$Text::Bidi::Flags::..> from 
+L<Text::Bidi::Constants>), or as a hashref of the form
+C<{REORDER_NSM =E<gt> 1}>. Defaults to C<FRIBIDI_FLAGS_DEFAULT>.
+
+=back
+
+The output consists of the modified map B<$mout> (a 
+L<Text::Bidi::Array::Long>), and possibly modified embedding levels 
+B<$elout>.
+
+=cut
 
 sub reorder_map {
     my $self = S(@_);
@@ -387,6 +490,8 @@ welcome!
 =head1 SEE ALSO
 
 L<Text::Bidi::Paragraph>
+
+L<Text::Bidi::Constants>
 
 L<Encode>
 

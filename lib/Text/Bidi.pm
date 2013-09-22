@@ -134,6 +134,10 @@ in your module.
 my $Global;
 our $GlobalClass = __PACKAGE__;
 
+=for Pod::Coverage S
+
+=cut
+
 sub S(\@) {
     my $l = shift;
     my $s = $l->[0];
@@ -142,72 +146,6 @@ sub S(\@) {
     $Global
 }
 
-=head1 TYPES AND NAMESPACES
-
-The following constants are imported from the fribidi library:
-
-=over
-
-=cut
-
-foreach ( keys %Text::Bidi::private:: ) {
-
-=item *
-
-Constants of the form B<FRIBIDI_TYPE_FOO> are available as 
-C<$Text::Bidi::Type::FOO> (note that, though these are variables, they are 
-read-only)
-
-=cut
-
-    *{"Text::Bidi::Type::$1"} = *{"Text::Bidi::private::$_"} 
-        if /^FRIBIDI_TYPE_([A-Z]*)$/;
-
-=item *
-
-Constants of the form B<FRIBIDI_MASK_FOO> are converted to 
-C<$Text::Bidi::Mask::FOO>.
-
-=cut
-
-    *{"Text::Bidi::Mask::$1"} = *{"Text::Bidi::private::$_"} 
-        if /^FRIBIDI_MASK_([A-Z]*)$/;
-
-=item *
-
-Constants of the form B<FRIBIDI_PAR_FOO> are converted to 
-C<$Text::Bidi::Par::FOO>.
-
-=cut
-
-    *{"Text::Bidi::Par::$1"} = *{"Text::Bidi::private::$_"} 
-        if /^FRIBIDI_PAR_([A-Z]*)$/;
-
-=item *
-
-Constants of the form B<FRIBIDI_FLAG_FOO> are converted to 
-C<$Text::Bidi::Flag::FOO>.
-
-=cut
-
-    *{"Text::Bidi::Flag::$1"} = *{"Text::Bidi::private::$_"} 
-        if /^FRIBIDI_FLAG_([A-Z]*)$/;
-
-=item *
-
-Constants of the form B<FRIBIDI_CHAR_FOO> are converted to the character they 
-represent, and assigned to C<$Text::Bidi::Char::FOO>.
-
-=cut
-
-    no warnings 'once';
-    ${"Text::Bidi::Char::$1"} = chr(${"Text::Bidi::private::$_"})
-        if /^FRIBIDI_CHAR_([A-Z]*)$/;
-}
-
-=back
-
-=cut
 
 sub new {
     my $class = shift;
@@ -245,12 +183,31 @@ sub internal_to_utf8 {
     decode('utf8', $r)
 }
 
+=func get_bidi_types
+
+    $types = get_bidi_types($internal);
+
+Returns a L<Text::Bidi::Array::Long> with the list of Bidi types of the text 
+given by $internal, a representation of the paragraph text, as returned by 
+utf8_to_internal(). Wraps fribidi_get_bidi_types(3).
+
+=cut
+
 sub get_bidi_types {
     my $self = S(@_);
     my $u = shift;
     my $t = Text::Bidi::private::get_bidi_types($$u);
     $self->tie_long($t)
 }
+
+=func get_bidi_type_name
+
+    say get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
+
+Return the string representation of a Bidi character type, as in 
+fribidi_get_bidi_type_name(3).
+
+=cut
 
 sub get_bidi_type_name {
     my $self = S(@_);
@@ -271,8 +228,9 @@ sub get_joining_type_name {
 sub get_par_embedding_levels {
     my $self = S(@_);
     my $bt = shift;
-    my $p = shift // $Text::Bidi::Par::ON;
-    my ($lev, $par, $out) = Text::Bidi::private::get_par_embedding_levels($$bt, $p);
+    my $p = shift // $Text::Bidi::private::FRIBIDI_PAR_ON;
+    my ($lev, $par, $out) = 
+        Text::Bidi::private::get_par_embedding_levels($$bt, $p);
     my $res = $self->tie_byte($out);
     ($par, $res)
 }
@@ -290,7 +248,7 @@ sub hash2flags {
     foreach ( keys %$flags ) {
         next unless $flags->{$_};
         next unless $_ eq uc;
-        my $v = 'Text::Bidi::Flag::' . $_;
+        my $v = 'Text::Bidi::private::FRIBIDI_FLAG_' . uc($_);
         $res |= $$v;
     }
     $res
@@ -314,7 +272,7 @@ sub reorder_map {
     if ( defined $flags ) {
         $flags = $self->hash2flags($flags) if ref $flags;
     } else {
-        $flags = $Text::Bidi::Flags::DEFAULT;
+        $flags = $Text::Bidi::private::FRIBIDI_FLAGS_DEFAULT;
     }
     $map //= [0..$#$bt];
 

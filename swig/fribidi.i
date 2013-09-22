@@ -143,7 +143,7 @@ OUTSTR(char, utf8out);
 %apply const FriBidiChar* str { const char* s }
 
 %apply int { FriBidiStrIndex }
-%apply unsigned long { FriBidiFlags, FriBidiParType }
+%apply unsigned long { FriBidiFlags, FriBidiParType, FriBidiCharType }
 
 
 %rename("%(strip:[fribidi_])s") "";

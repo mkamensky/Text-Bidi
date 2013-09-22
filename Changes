@@ -1,5 +1,6 @@
 Revision history for Text-Bidi
 {{$NEXT}}
+        * Switching to Dist::Zilla
 
 2.03      2013-09-20 12:09:39 Asia/Jerusalem
         * More changes to Makefile.PL

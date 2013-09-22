@@ -18,5 +18,6 @@ t/text/
 cpanfile
 Text-Bidi*tar.gz
 Text-Bidi-*/
+old/
 
 

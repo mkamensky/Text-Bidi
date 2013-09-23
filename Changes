@@ -1,5 +1,7 @@
 Revision history for Text-Bidi
 {{$NEXT}}
+
+2.04      2013-09-23 11:46:51 Asia/Jerusalem
         * The Fribidi constants are now loaded via a separate module, 
           Text::Bidi::Constants
         * Switching to Dist::Zilla

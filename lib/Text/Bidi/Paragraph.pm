@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Fri 20 Sep 2013 11:43:43 AM IDT
+# Last Changed: Mon 23 Sep 2013 10:05:59 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -35,14 +35,14 @@ A paragraph is processed by creating a L<Text::Bidi::Paragraph> object:
 
 Here C<$logical> is the text of the paragraph. This applies the first stages 
 of the bidi algorithm: computation of the embedding levels. Once this is 
-done, the text can be displayed using the L</visual()> method, which does the 
+done, the text can be displayed using the L</visual> method, which does the 
 reordering.
 
 =cut
 
 use Text::Bidi;
 
-=method new()
+=method new
 
     my $par = new Text::Bidi::Paragraph $logical, ...;
 
@@ -50,11 +50,12 @@ Create a new object corresponding to a text B<$logical> in logical order. The
 other arguments are key-value pairs. The only ones that have a meaning at the 
 moment are I<bd>, which supplies the L<Text::Bidi> object to use, and 
 I<dir>, which prescribes the direction of the paragraph. The value of I<dir> 
-is a constant in C<Text::Bidi::Par::> (e.g., C<$Text::Bidi::Par::RTL>).
+is a constant in C<Text::Bidi::Par::> (e.g., C<$Text::Bidi::Par::RTL>; see 
+L<Text::Bidi::Constants>).
 
 Note that the mere creation of B<$par> runs the bidi algorithm on the given 
 text B<$logical> up to the point of reordering (which is dealt with in 
-L</visual()>).
+L</visual>).
 
 =cut
 
@@ -66,56 +67,70 @@ sub new {
     $self->{'bd'} = Text::Bidi::S(@bd);
     $self->{'par'} = $par;
     bless $self => $class;
-    $self->init;
+    $self->_init;
     $self
 }
 
-=method par()
+=method par
 
     my $logical = $par->par;
 
 Returns the logical (input) text corresponding to this paragraph.
 
-=method dir()
+=method dir
 
     my $dir = $par->dir;
 
 Returns the direction of this paragraph, a constant in the 
-C<$Text::Bidi::Par::> package.
+C<$Text::Bidi::Par::> namespace.
 
-=method len()
+=method len
 
     my $len = $par->len;
 
 The length of this paragraph.
 
-=method types()
+=method types
 
     my $types = $par->types;
 
 The Bidi types of the characters in this paragraph. Each element of 
-C<@$types> is a constant in the C<$Text::Bidi::Type::> package.
+C<@$types> is a constant in the C<$Text::Bidi::Type::> namespace.
 
-=method levels()
+=method levels
 
     my $levels = $par->levels;
 
 The embedding levels for this paragraph. Each element of C<@$levels> is an 
 integer.
 
+=method bd
+
+    my $bd = $par->bd;
+
+The L<Text::Bidi> object used to interface with libfribidi.
+
+=method map
+
+    my $map = $par->map;
+
+The map from the logical text to the visual. This is updated on each call to 
+L</visual>, so that the map for the full paragraph is correct only after 
+calling L</visual> for the whole text.
+
 =cut
 
-for my $f ( qw(par bd dir _par _mirpar)) {
+for my $f ( qw(par bd dir _par _mirpar _unicode _mirrored )) {
     no strict 'refs';
     *$f = sub { $_[0]->{$f} };
 }
 
-for my $f ( qw(len unicode types levels mirrored map) ) {
+for my $f ( qw(len types levels map) ) {
     no strict 'refs';
     *$f = sub { $_[0]->{"_$f"} };
 }
 
-=method is_rtl()
+=method is_rtl
 
     my $rtl = $par->is_rtl;
 
@@ -123,26 +138,26 @@ Returns true if the direction of the paragraph is C<RTL> (right to left).
 
 =cut
 
-sub is_rtl { $_[0]->dir == $Text::Bidi::Par::RTL }
+sub is_rtl { $_[0]->dir == $Text::Bidi::private::FRIBIDI_PAR_RTL }
 
-sub init {
+sub _init {
     my ($self) = (@_);
     my $par = $self->par;
     $self->{'_len'} = length($par);
     my $bd = $self->bd;
     $self->{'_unicode'} = $bd->utf8_to_internal($par);
     #$self->{'_par'} = [split '', $par];
-    $self->{'_types'} = $bd->get_bidi_types($self->unicode);
+    $self->{'_types'} = $bd->get_bidi_types($self->_unicode);
     (my $d, $self->{'_levels'}) =
         $bd->get_par_embedding_levels($self->types, $self->dir);
     $self->{'dir'} //= $d;
-    $self->{'_map'} = [0..$#{$self->unicode}];
-    $self->{'_mirrored'} = $bd->mirrored($self->levels, $self->unicode);
-    $self->{'_mirpar'} = $bd->internal_to_utf8($self->mirrored);
+    $self->{'_map'} = [0..$#{$self->_unicode}];
+    $self->{'_mirrored'} = $bd->mirrored($self->levels, $self->_unicode);
+    $self->{'_mirpar'} = $bd->internal_to_utf8($self->_mirrored);
     $self->{'_par'} = [split '', $self->_mirpar ];
 }
 
-=method visual()
+=method visual
 
     my $visual = $par->visual($offset, $length, $flags);
 
@@ -197,7 +212,6 @@ sub visual {
 }
 
 1;
-
 
 =head1 SEE ALSO
 

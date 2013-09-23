@@ -35,15 +35,15 @@ The following functions can be exported (nothing is exported by default):
 
 =item *
 
-L</log2vis()>
+L</log2vis>
 
 =item *
 
-L</is_bidi()>
+L</is_bidi>
 
 =item *
 
-L</get_mirror_char()>
+L</get_mirror_char>
 
 =back
 
@@ -88,10 +88,10 @@ second requires knowledge of the width of the displayed lines. The module (or
 the library) does not determine how the text is broken into paragraphs.
 
 The main interface is provided by L<Text::Bidi::Paragraph>, see there for 
-details. This module provides an abreviation, L</log2vis()>, which combines 
-creating a paragraph object with calling L<Text::Bidi::Paragraph/visual> 
-on it.  It is particularly useful in the case that every line is a paragraph 
-on its own:
+details. This module provides an abreviation, L</log2vis>, which combines 
+creating a paragraph object with calling L<Text::Bidi::Paragraph/visual> on 
+it.  It is particularly useful in the case that every line is a paragraph on 
+its own:
 
     $visual = log2vis($logical);
 
@@ -432,7 +432,7 @@ sub reorder_map {
     ($elout, $mout)
 }
 
-=func log2vis()
+=func log2vis
 
     my $visual = log2vis($logical,...);
 

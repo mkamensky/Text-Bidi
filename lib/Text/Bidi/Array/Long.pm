@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 06:12:39 PM IDT
-# Last Changed: Fri 20 Sep 2013 08:58:17 AM IDT
+# Last Changed: Mon 23 Sep 2013 09:00:25 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -34,6 +34,10 @@ use Carp;
 
 use Text::Bidi::Array;
 use base qw(Text::Bidi::Array);
+
+=for Pod::Coverage native_to_big big_to_native
+
+=cut
 
 BEGIN {
 # fribidi uses native endianness, vec uses N (big-endian)

@@ -1,5 +1,5 @@
 # Created: Wed 11 Sep 2013 09:47:56 AM IDT
-# Last Changed: Fri 20 Sep 2013 08:57:27 AM IDT
+# Last Changed: Mon 23 Sep 2013 09:20:16 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -57,6 +57,10 @@ I<$data> can be either a string, which the new object then view as an array
 of the given type, or an array reference (more precisely, anything that can 
 be dereferenced as an array), which is then packed according to the rules of 
 B<Type>. If no I<$data> is given, it defaults to 0.
+
+=cut
+
+=for Pod::Coverage new
 
 =cut
 
@@ -119,10 +123,10 @@ sub TIEARRAY {
     my $data = shift || 0;
     my $self = { @_ };
     bless $self => $class;
-    $self->init($data)
+    $self->_init($data)
 }
 
-sub init {
+sub _init {
     my ($self, $data) = @_;
     if ( ref($data) ) {
         my @data = eval { @$data };
@@ -132,6 +136,10 @@ sub init {
     $self->{'data'} = $data;
     return $self
 }
+
+=for Pod::Coverage data as_scalar as_array
+
+=cut
 
 sub data { $_[0]->{'data'} }
 

@@ -23,7 +23,10 @@ use Encode qw(encode decode);
     # or just
     $visual = log2vis(...);
 
-    # with real paragraphs:
+    # For real paragraphs, need to specify the display width
+    ($par, $map, $visual) = log2vis($logical, $width);
+
+    # object oriented approach allows to display line by line
     $p = new Text::Bidi::Paragraph $logical;
     $visual = $p->visual($off, $len);
 
@@ -73,7 +76,7 @@ The fundamental purpose of the bidi algorithm is to reorder text given in
 logical order into text in visually correct order, suitable for display using 
 standard printing commands. ``Logical order'' means that the characters are 
 given in the order in which they would be read if printed correctly. The 
-direction of the text is determined by properties of the unicode characters, 
+direction of the text is determined by properties of the Unicode characters, 
 usually without additional hints.  See 
 L<http://www.unicode.org/unicode/reports/tr9/> for more details on the 
 problem and the algorithm.
@@ -87,18 +90,17 @@ that the first stage requires only the text of the paragraph, while the
 second requires knowledge of the width of the displayed lines. The module (or 
 the library) does not determine how the text is broken into paragraphs.
 
-The main interface is provided by L<Text::Bidi::Paragraph>, see there for 
-details. This module provides an abreviation, L</log2vis>, which combines 
+The full interface is provided by L<Text::Bidi::Paragraph>, see there for 
+details. This module provides an abbreviation, L</log2vis>, which combines 
 creating a paragraph object with calling L<Text::Bidi::Paragraph/visual> on 
-it.  It is particularly useful in the case that every line is a paragraph on 
-its own:
+it.  It is particularly useful in the case that the whole paragraph should be 
+displayed at once, and the display width is known:
 
-    $visual = log2vis($logical);
+    $visual = log2vis($logical, $width);
 
-There are more options (see the corresponding section), but this is 
-essentially it. The rest of this documentation will probably be useful only 
-to people who are familiar with I<libfribidi> and who wish to extend or 
-modify the module.
+There are more options (see L</log2vis>), but this is essentially it. The 
+rest of this documentation will probably be useful only to people who are 
+familiar with I<libfribidi> and who wish to extend or modify the module.
 
 =head2 The object-oriented approach
 
@@ -434,21 +436,35 @@ sub reorder_map {
 
 =func log2vis
 
-    my $visual = log2vis($logical,...);
+    ($p, $visual) = log2vis($logical[,$width[,$dir[,$flags]]]);
 
-Treat the input B<$logical> as a one line paragraph, and apply all stages of 
-the algorithm to it. This works well if the paragraph does indeed span only 
-one visual line. The other arguments are passed to 
-L<Text::Bidi::Paragraph/visual>, but this is probably worthless.
+Convert the input paragraph B<$logical> to visual. This constructs a 
+L<Text::Bidi::Paragraph> object, and calls L<Text::Bidi::Paragraph/visual> 
+several times, as required. B<$width> is the maximum width of a line, 
+defaulting to the whole length of the paragraph.  B<$dir> is the base 
+direction of the paragraph, determined automatically if not provided.  
+B<$flags> is as in L<Text::Bidi::Paragraph/visual>. The paragraph will be 
+justified to the right if it is RTL.
+
+The output consists of the L<Text::Bidi::Paragraph> object B<$p> and the 
+visual string B<$visual>.
 
 =cut
 
 sub log2vis {
     require Text::Bidi::Paragraph;
-    my $log = shift;
-    my $p = new Text::Bidi::Paragraph $log;
-    my $res = $p->visual(@_);
-    ($p, $res)
+    my ($log, $width, $dir, $flags) = shift;
+    my $p = new Text::Bidi::Paragraph $log, dir => $dir;
+    $width //= $p->len;
+    my $off = 0;
+    while ( $off < $p->len ) {
+        my $v = $p->visual($off, $width, $flags);
+        my $l = length($v);
+        $off += $l;
+        $v = (' ' x ($width - $l)) . $v if $p->is_rtl;
+        push @visual, $v;
+    }
+    ($p, join("\n", @visual))
 }
 
 =func is_bidi()

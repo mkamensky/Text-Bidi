@@ -7,8 +7,6 @@ use 5.10.0;
 use warnings;
 use integer;
 use strict;
-use IPC::System::Simple qw(system);
-use autodie qw(:all);
 
 use open ':encoding(utf8)';
 use open ':std';
@@ -20,7 +18,8 @@ GetOptions(\%Opts, qw(break:s rtl! ltr! levels! width=i));
 
 $Opts{'break'} = ' ' if defined($Opts{'break'}) and ($Opts{'break'} eq '');
 
-use Text::Bidi::Paragraph;
+use Text::Bidi;
+use Text::Bidi::Constants;
 #use Carp::Always;
 
 # read paragraphs (and make perlcritic happy with 'local')
@@ -31,15 +30,8 @@ my $dir = $Opts{'rtl'} ? $Text::Bidi::Par::RTL
                        : $Opts{'ltr'} ? $Text::Bidi::Par::LTR : undef;
 while (<>) {
     s/ *\n */ /g;
-    my $p = new Text::Bidi::Paragraph $_, dir => $dir;
-    my $offset = 0;
-    while ( $offset < $p->len ) {
-        my $v = $p->visual($offset, $width, $flags);
-        my $l = length($v);
-        $v = (' ' x ($width-$l)) . $v if $p->is_rtl;
-        say $v;
-        $offset += $l;
-    }
+    my ($p, $visual) = log2vis($_, $width, $dir, $flags);
+    say $visual;
     say join(' ', @{$p->levels}) if $Opts{'levels'};
     say '';
 }

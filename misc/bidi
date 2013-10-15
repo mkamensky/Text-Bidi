@@ -1,6 +1,6 @@
 #! perl
 # Created: Tue 21 Aug 2012 12:49:09 PM IDT
-# Last Changed: Mon 23 Sep 2013 11:34:27 AM IDT
+# Last Changed: Wed 25 Sep 2013 12:50:06 PM IDT
 # Author: Moshe Kamensky <kamensky@cpan.org>
 
 =head1 NAME
@@ -58,7 +58,7 @@ sub on_refresh_begin {
             my ($p, $v) = log2vis($part);
             push @res, $v;
             push @levels, @{$p->levels}, 0;
-            push @map, map { $_+$off } @{$p->map};
+            push @map, map { $_ + $off } @{$p->map};
             $off += length($part);
             # compensate for the field separator
             push @map, $off..$off+$self->{'ls'}-1;

@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Mon 23 Sep 2013 10:05:59 AM IDT
+# Last Changed: Tue 15 Oct 2013 01:10:47 PM IDT
 
 use 5.10.0;
 use warnings;
@@ -26,7 +26,7 @@ package Text::Bidi::Paragraph;
 =head1 DESCRIPTION
 
 This class provides the main interface for applying the bidi algorithm in 
-full generality. In the case where the paragraph spans only one visual line, 
+full generality. In the case where the paragraph can be formatted at once, 
 L<Text::Bidi/log2vis> can be used as a shortcut.
 
 A paragraph is processed by creating a L<Text::Bidi::Paragraph> object:
@@ -114,9 +114,13 @@ The L<Text::Bidi> object used to interface with libfribidi.
 
     my $map = $par->map;
 
-The map from the logical text to the visual. This is updated on each call to 
-L</visual>, so that the map for the full paragraph is correct only after 
-calling L</visual> for the whole text.
+The map from the logical text to the visual, i.e., the values in C<$map> are 
+indices in the logical string, so that the C<$i>-th character of the visual 
+string is the character that occurs at C<$map-E<gt>[$i]> in the logical 
+string.
+
+This is updated on each call to L</visual>, so that the map for the full 
+paragraph is correct only after calling L</visual> for the whole text.
 
 =cut
 
@@ -148,9 +152,8 @@ sub _init {
     $self->{'_unicode'} = $bd->utf8_to_internal($par);
     #$self->{'_par'} = [split '', $par];
     $self->{'_types'} = $bd->get_bidi_types($self->_unicode);
-    (my $d, $self->{'_levels'}) =
+    ($self->{'dir'}, $self->{'_levels'}) =
         $bd->get_par_embedding_levels($self->types, $self->dir);
-    $self->{'dir'} //= $d;
     $self->{'_map'} = [0..$#{$self->_unicode}];
     $self->{'_mirrored'} = $bd->mirrored($self->levels, $self->_unicode);
     $self->{'_mirpar'} = $bd->internal_to_utf8($self->_mirrored);

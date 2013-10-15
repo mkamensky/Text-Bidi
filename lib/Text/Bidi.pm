@@ -453,10 +453,11 @@ visual string B<$visual>.
 
 sub log2vis {
     require Text::Bidi::Paragraph;
-    my ($log, $width, $dir, $flags) = shift;
+    my ($log, $width, $dir, $flags) = @_;
     my $p = new Text::Bidi::Paragraph $log, dir => $dir;
     $width //= $p->len;
     my $off = 0;
+    my @visual;
     while ( $off < $p->len ) {
         my $v = $p->visual($off, $width, $flags);
         my $l = length($v);

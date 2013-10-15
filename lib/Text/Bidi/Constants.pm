@@ -18,6 +18,7 @@ Note that, though these are variables, they are read-only.
 
 =cut
 
+use Text::Bidi::private;
 SYM: for my $sym ( keys %Text::Bidi::private:: ) {
     next unless $sym =~ /^FRIBIDI_/;
 

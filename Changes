@@ -1,6 +1,8 @@
 Revision history for Text-Bidi
 {{$NEXT}}
 
+2.06      2013-10-15 23:28:06 Asia/Jerusalem
+
         * Made log2vis() more useful
         * Bug fixes
         * Added some tests

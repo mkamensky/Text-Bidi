@@ -137,7 +137,7 @@ Reorder of '$ine'
   computed par dir: $cpdname
   levels: @levels
 EOF
-            ) or BAIL_OUT('failed');
+            ); # or BAIL_OUT('failed');
         }}
         next;
     }

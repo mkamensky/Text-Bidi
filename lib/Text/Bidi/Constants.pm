@@ -49,7 +49,7 @@ for possible constants.
 
     for my $kind ( qw(Type Mask Par Flag) ) {
         if ( $sym =~ /FRIBIDI_\U${kind}\E_([A-Z_]*)$/ ) {
-            *{"Text::Bidi::$kind::$1"} = *{"Text::Bidi::private::$sym"};
+            *{"Text::Bidi::${kind}::$1"} = *{"Text::Bidi::private::$sym"};
             next SYM;
         }
     }

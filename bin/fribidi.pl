@@ -19,7 +19,7 @@ GetOptions(\%Opts, qw(break:s rtl! ltr! levels! dir! ltov! types! verbose! width
 $Opts{'break'} = ' ' if defined($Opts{'break'}) and ($Opts{'break'} eq '');
 $Opts{$_} = 1 foreach (qw(levels dir ltov types)) if $Opts{'verbose'};
 
-use Text::Bidi qw(log2vis get_bidi_type_name);
+use Text::Bidi qw(log2vis);
 use Text::Bidi::Constants;
 #use Carp::Always;
 
@@ -35,8 +35,7 @@ while (<>) {
     say $visual;
     say "Base dir: " . $p->dir if $Opts{'dir'};
     say "Levels: " . join(' ', @{$p->levels}) if $Opts{'levels'};
-    say "Types: " . join(' ', map { get_bidi_type_name($_) } @{$p->types})
-        if $Opts{'types'};
+    say "Types: " . join(' ', $p->type_names) if $Opts{'types'};
     say '';
 }
 

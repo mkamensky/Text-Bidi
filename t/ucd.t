@@ -43,7 +43,7 @@ my %char = (
     PDI => [chr(0x2069)],
 );
 
-use Text::Bidi qw(log2vis);
+use Text::Bidi qw(log2vis get_bidi_type_name);
 use Text::Bidi::Constants;
 
 sub char {
@@ -101,7 +101,7 @@ foreach ( <$fh> ) {
         my $ine = escape($in);
         for my $pdir ( dirs($bits) ) {
         SKIP: {
-            my $pdname = Text::Bidi::get_bidi_type_name($pdir);
+            my $pdname = get_bidi_type_name($pdir);
             skip 'Test fails in libfribidi', 2
                 if defined $known{"$ing;$pdname"};
             my ($p, $vis) = log2vis($in, length($in), $pdir);
@@ -110,8 +110,8 @@ foreach ( <$fh> ) {
             $olev[$_] = 'x' foreach @levund;
             local $" = ',';
             my @int = @{$p->_unicode};
-            my @types = map { Text::Bidi::get_bidi_type_name($_) } @{$p->types};
-            my $cpdname = Text::Bidi::get_bidi_type_name($p->dir);
+            my @types = $p->type_names;
+            my $cpdname = get_bidi_type_name($p->dir);
             #say $err "$ing;$pdname: @olev > @levels % $in" unless
             is("@olev", "@levels", <<EOF
 

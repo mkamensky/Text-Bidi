@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Thu 17 Oct 2013 09:54:28 AM IDT
+# Last Changed: Thu 17 Oct 2013 10:29:42 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -67,8 +67,7 @@ sub new {
     $self->{'bd'} = Text::Bidi::S(@bd);
     $self->{'par'} = $par;
     bless $self => $class;
-    $self->_init;
-    $self
+    $self->_init
 }
 
 =method par
@@ -172,6 +171,7 @@ sub _init {
     $self->{'_mirrored'} = $bd->mirrored($self->levels, $self->_unicode);
     $self->{'_mirpar'} = $bd->internal_to_utf8($self->_mirrored);
     $self->{'_par'} = [split '', $self->_mirpar ];
+    $self
 }
 
 =method visual

@@ -52,6 +52,14 @@ L</get_mirror_char>
 
 L</get_bidi_type_name>
 
+=item *
+
+L</fribidi_version>
+
+=item *
+
+L</unicode_version>
+
 =back
 
 All of them can be exported together using the C<:all> tag.
@@ -65,6 +73,8 @@ BEGIN {
             is_bidi
             get_mirror_char
             get_bidi_type_name
+            fribidi_version
+            unicode_version
         ) ],
     );
     our @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
@@ -249,7 +259,7 @@ sub get_bidi_types {
     $self->tie_long($t)
 }
 
-=method get_bidi_type_name
+=func get_bidi_type_name
 
     say $tb->get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
 
@@ -500,6 +510,30 @@ sub get_mirror_char {
     my $r = Text::Bidi::private::get_mirror_char($u->[0]);
     my $res = $self->tie_long([$r]);
     wantarray ? ($res) : $self->internal_to_utf8($res)
+}
+
+=func fribidi_version
+
+    say fribidi_version();
+
+Returns the version information for the fribidi library
+
+=cut
+
+sub fribidi_version {
+    $Text::Bidi::private::version_info
+}
+
+=func unicode_version
+
+    say unicode_version();
+
+Returns the Unicode version used by the fribidi library
+
+=cut
+
+sub unicode_version {
+    $Text::Bidi::private::unicode_version
 }
 
 =head1 BUGS

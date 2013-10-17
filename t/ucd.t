@@ -115,7 +115,7 @@ foreach ( <$fh> ) {
             #say $err "$ing;$pdname: @olev > @levels % $in" unless
             is("@olev", "@levels", <<EOF
 
-Levels of '$ine'
+Levels of '$ine' (line $.)
   ord of chars:@ords
   types in: $ing
   Internal rep.: @int
@@ -128,7 +128,7 @@ EOF
             my @map = grep { not $levund{$_} } @$map;
             is("@map", "@reorder", <<EOF
 
-Reorder of '$ine'
+Reorder of '$ine' (line $.)
   ord of chars:@ords
   types in: $ing
   Internal rep.: @int

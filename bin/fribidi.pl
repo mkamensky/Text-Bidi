@@ -32,14 +32,15 @@ $flags = { break => $Opts{'break'} } if defined $Opts{'break'};
 my $dir = $Opts{'rtl'} ? $Text::Bidi::Par::RTL 
                        : $Opts{'ltr'} ? $Text::Bidi::Par::LTR : undef;
 while (<>) {
+    chomp;
     s/ *\n */ /g;
     my ($p, $visual) = log2vis($_, $width, $dir, $flags);
     say $visual;
     say '';
-    say "Base dir: " . get_bidi_type_name($p->dir) if $Opts{'dir'};
-    say "Hex: " . join(' ', map { sprintf("%x", ord($_)) } split '');
-    say "Types: " . join(' ', $p->type_names) if $Opts{'types'};
-    say "Levels: " . join(' ', @{$p->levels}) if $Opts{'levels'};
+    say STDERR "Base dir: " . get_bidi_type_name($p->dir) if $Opts{'dir'};
+    say STDERR "Hex: " . join(' ', map { sprintf("%x", ord($_)) } split '');
+    say STDERR "Types: " . join(' ', $p->type_names) if $Opts{'types'};
+    say STDERR "Levels: " . join(' ', @{$p->levels}) if $Opts{'levels'};
 }
 
 # start of POD

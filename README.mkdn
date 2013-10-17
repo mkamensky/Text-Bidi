@@ -29,6 +29,8 @@ The following functions can be exported (nothing is exported by default):
 - ["is\_bidi"](#is\_bidi)
 - ["get\_mirror\_char"](#get\_mirror\_char)
 - ["get\_bidi\_type\_name"](#get\_bidi\_type\_name)
+- ["fribidi\_version"](#fribidi\_version)
+- ["unicode\_version"](#unicode\_version)
 
 All of them can be exported together using the `:all` tag.
 
@@ -88,6 +90,14 @@ simultaneously. If you are interested in deriving from this class, please see
 
 # FUNCTIONS
 
+## get\_bidi\_type\_name
+
+    say $tb->get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
+
+Return the string representation of a Bidi character type, as in 
+fribidi\_get\_bidi\_type\_name(3). Note that for the above example, one needs to 
+use [Text::Bidi::Constants](http://search.cpan.org/perldoc?Text::Bidi::Constants).
+
 ## log2vis
 
     ($p, $visual) = log2vis($logical[,$width[,$dir[,$flags]]]);
@@ -116,6 +126,18 @@ helps if we want to short-circuit.
     my $mir = get_mirror_char('['); # $mir == ']'
 
 Return the mirror character of the input, possibly itself.
+
+## fribidi\_version
+
+    say fribidi_version();
+
+Returns the version information for the fribidi library
+
+## unicode\_version
+
+    say unicode_version();
+
+Returns the Unicode version used by the fribidi library
 
 # SUBCLASSING
 
@@ -165,14 +187,6 @@ used by libfribidi, into a Perl string. The array _$la_ can be either a
 Returns a [Text::Bidi::Array::Long](http://search.cpan.org/perldoc?Text::Bidi::Array::Long) with the list of Bidi types of the text 
 given by $internal, a representation of the paragraph text, as returned by 
 utf8\_to\_internal(). Wraps fribidi\_get\_bidi\_types(3).
-
-## get\_bidi\_type\_name
-
-    say $tb->get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
-
-Return the string representation of a Bidi character type, as in 
-fribidi\_get\_bidi\_type\_name(3). Note that for the above example, one needs to 
-use [Text::Bidi::Constants](http://search.cpan.org/perldoc?Text::Bidi::Constants).
 
 ## get\_joining\_types
 

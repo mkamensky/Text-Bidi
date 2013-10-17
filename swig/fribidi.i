@@ -215,6 +215,9 @@ FriBidiLevel reorder_map (const FriBidiFlags flags,
   return fribidi_reorder_line(
       flags, bd_types, length, off, base_dir, emb_levels, NULL, map);
 }
+
+extern const char *fribidi_version_info;
+
 %}
 
 

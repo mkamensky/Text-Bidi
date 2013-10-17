@@ -14,11 +14,12 @@ use open ':std';
 use Getopt::Long qw(:config gnu_getopt auto_help auto_version);
 our $width = $ENV{'COLUMNS'} // 80;
 our %Opts = ('width=i' => \$width);
-GetOptions(\%Opts, qw(break:s rtl! ltr! levels! width=i));
+GetOptions(\%Opts, qw(break:s rtl! ltr! levels! dir! ltov! types! verbose! width=i));
 
 $Opts{'break'} = ' ' if defined($Opts{'break'}) and ($Opts{'break'} eq '');
+$Opts{$_} = 1 foreach (qw(levels dir ltov types)) if $Opts{'verbose'};
 
-use Text::Bidi;
+use Text::Bidi qw(log2vis get_bidi_type_name);
 use Text::Bidi::Constants;
 #use Carp::Always;
 
@@ -32,7 +33,10 @@ while (<>) {
     s/ *\n */ /g;
     my ($p, $visual) = log2vis($_, $width, $dir, $flags);
     say $visual;
-    say join(' ', @{$p->levels}) if $Opts{'levels'};
+    say "Base dir: " . $p->dir if $Opts{'dir'};
+    say "Levels: " . join(' ', @{$p->levels}) if $Opts{'levels'};
+    say "Types: " . join(' ', map { get_bidi_type_name($_) } @{$p->types})
+        if $Opts{'types'};
     say '';
 }
 

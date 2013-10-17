@@ -1,5 +1,7 @@
 Revision history for Text-Bidi
 {{$NEXT}}
+
+2.07      2013-10-17 12:47:51 Asia/Jerusalem
         * Added functions for retrieving version of libfribidi and Unicode
         * Added method type_names() to Text::Bidi::Paragraph
         * get_bidi_type_name() in Text::Bidi is now exportable

@@ -48,6 +48,10 @@ L</is_bidi>
 
 L</get_mirror_char>
 
+=item *
+
+L</get_bidi_type_name>
+
 =back
 
 All of them can be exported together using the C<:all> tag.
@@ -60,6 +64,7 @@ BEGIN {
             log2vis
             is_bidi
             get_mirror_char
+            get_bidi_type_name
         ) ],
     );
     our @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );

@@ -11,7 +11,12 @@ use strict;
 use open ':encoding(utf8)';
 use open ':std';
 
+use Text::Bidi 2.07 qw(log2vis get_bidi_type_name fribidi_version);
+use Text::Bidi::Constants;
+#use Carp::Always;
+
 use Getopt::Long qw(:config gnu_getopt auto_help auto_version);
+our $VERSION = "2.07\nlibfribidi " . fribidi_version;
 our $width = $ENV{'COLUMNS'} // 80;
 our %Opts = ('width=i' => \$width);
 GetOptions(\%Opts, qw(break:s rtl! ltr! levels! hex! dir! ltov! types! verbose! width=i));
@@ -21,9 +26,6 @@ if ($Opts{'verbose'}) {
     $Opts{$_} = 1 foreach (qw(levels dir ltov types hex));
 }
 
-use Text::Bidi qw(log2vis get_bidi_type_name);
-use Text::Bidi::Constants;
-#use Carp::Always;
 
 # read paragraphs (and make perlcritic happy with 'local')
 local $/ = '';

@@ -1,5 +1,10 @@
 Revision history for Text-Bidi
 {{$NEXT}}
+        * Added functions for retrieving version of libfribidi and Unicode
+        * Added method type_names() to Text::Bidi::Paragraph
+        * get_bidi_type_name() in Text::Bidi is now exportable
+        * Added debugging options --hex, --types, --verbose ... to fribidi.pl
+        * Fixed bugs in fribidi.pl
         * Fixed bug with variable interpolation in Constants.pm
 2.06      2013-10-15 23:28:06 Asia/Jerusalem
         * Made log2vis() more useful

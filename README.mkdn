@@ -28,6 +28,7 @@ The following functions can be exported (nothing is exported by default):
 - ["log2vis"](#log2vis)
 - ["is\_bidi"](#is\_bidi)
 - ["get\_mirror\_char"](#get\_mirror\_char)
+- ["get\_bidi\_type\_name"](#get\_bidi\_type\_name)
 
 All of them can be exported together using the `:all` tag.
 

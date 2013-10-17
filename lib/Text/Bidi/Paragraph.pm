@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Thu 17 Oct 2013 09:31:37 AM IDT
+# Last Changed: Thu 17 Oct 2013 09:54:28 AM IDT
 
 use 5.10.0;
 use warnings;
@@ -136,13 +136,17 @@ for my $f ( qw(len types levels map) ) {
 
 =method type_names
 
-    @types = $par->type_names
+    @types = $par->type_names;
 
 Returns the list of bidi types as strings
 
 =cut
 
-sub type_names { map { $_[0]->bd->get_bidi_type_name($_) } $_[0]->types }
+sub type_names {
+    my $self = shift;
+    my $bd = $self->bd;
+    map { $bd->get_bidi_type_name($_) } @{$self->types}
+}
 
 =method is_rtl
 

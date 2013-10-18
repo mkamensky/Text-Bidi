@@ -60,6 +60,10 @@ L</fribidi_version>
 
 L</unicode_version>
 
+=item *
+
+L</fribidi_version_num>
+
 =back
 
 All of them can be exported together using the C<:all> tag.
@@ -74,6 +78,7 @@ BEGIN {
             get_mirror_char
             get_bidi_type_name
             fribidi_version
+            fribidi_version_num
             unicode_version
         ) ],
     );
@@ -522,6 +527,18 @@ Returns the version information for the fribidi library
 
 sub fribidi_version {
     $Text::Bidi::private::version_info
+}
+
+=func fribidi_version_num
+
+    say fribidi_version_num();
+
+Returns the version number for the fribidi library
+
+=cut
+
+sub fribidi_version_num {
+    fribidi_version =~ /\(GNU FriBidi\) ([0-9.]*)/ ? $1 : ()
 }
 
 =func unicode_version

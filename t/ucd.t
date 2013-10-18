@@ -7,6 +7,7 @@ use warnings;
 use integer;
 use open qw[:encoding(utf-8) :std];
 use charnames qw(:full :short);
+use version 0.77;
 BEGIN {
 binmode STDOUT => ':utf8';
 binmode STDERR => ':utf8';
@@ -18,8 +19,8 @@ sub crange { map { chr } $_[0]..$_[1] }
 
 no warnings 'qw';
 my %char = (
-    L => ['A'..'Z','a'..'z',"\N{LRM}"],
-    R => [crange(ord("\N{hebrew:alef}"), ord("\N{hebrew:tav}")), "\N{RLM}"],
+    L => ['A'..'Z','a'..'z',"\N{LEFT-TO-RIGHT MARK}"],
+    R => [crange(ord("\N{hebrew:alef}"), ord("\N{hebrew:tav}")), "\N{RIGHT-TO-LEFT MARK}"],
     AL => [crange(ord("\N{arabic:alef}"), ord("\N{arabic:yeh}")), chr(0x61c)],
     EN => ['0'..'9'],
     ES => [qw(+ -)],
@@ -32,18 +33,24 @@ my %char = (
     S => [chr(9), chr(0xb), chr(0x1f)],
     WS => [chr(0xc), ' '],
     ON => [qw(! " & ' * ; < = > ? @ [ \ ] ^ _ ` { | } ~), chr(0x606), chr(0x60e)],
-    LRE => ["\N{LRE}"],
-    LRO => ["\N{LRO}"],
-    RLE => ["\N{RLE}"],
-    RLO => ["\N{RLO}"],
-    PDF => ["\N{PDF}"],
+    LRE => ["\N{LEFT-TO-RIGHT EMBEDDING}"],
+    LRO => ["\N{LEFT-TO-RIGHT OVERRIDE}"],
+    RLE => ["\N{RIGHT-TO-LEFT EMBEDDING}"],
+    RLO => ["\N{RIGHT-TO-LEFT OVERRIDE}"],
+    PDF => ["\N{POP DIRECTIONAL FORMATTING}"],
     LRI => [chr(0x2066)],
     RLI => [chr(0x2067)],
     FSI => [chr(0x2068)],
     PDI => [chr(0x2069)],
 );
 
-use Text::Bidi qw(log2vis get_bidi_type_name);
+use Text::Bidi qw(log2vis get_bidi_type_name unicode_version);
+
+BEGIN {
+    plan skip_all => 'libfribidi Unicode version too old'
+        if version->parse(unicode_version()) < v6.0.0;
+}
+
 use Text::Bidi::Constants;
 
 sub char {

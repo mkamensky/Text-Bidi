@@ -1,5 +1,7 @@
 Revision history for Text-Bidi
 {{$NEXT}}
+
+2.08      2013-10-18 15:48:39 Asia/Jerusalem
         * Made ucd.t less fail prone on older versions of Perl and fribidi
         * Added fribidi_version_num to Text::Bidi
 2.07      2013-10-17 12:47:51 Asia/Jerusalem

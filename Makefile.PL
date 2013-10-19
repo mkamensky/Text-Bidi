@@ -17,13 +17,14 @@ if ( %fribidi ) {
     $cflags = $fribidi{'cflags'};
 } else {
     unless ( -r '/usr/include/fribidi/fribidi.h' ) {
-        die <<'EOF'
+        warn <<'EOF'
 
 It seems that fribidi is missing. 
 
 fribidi should be installed prior to the installation of this module.
 
 EOF
+        exit 0;
 
     }
     warn "Using heuristic values for CFLAGS and LIBS\n";

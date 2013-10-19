@@ -1,4 +1,4 @@
-Revision history for Text-Bidi
+Revision history for Perl module Text::Bidi
 {{$NEXT}}
 
 2.08      2013-10-18 15:48:39 Asia/Jerusalem
@@ -16,6 +16,7 @@ Revision history for Text-Bidi
         * Bug fixes
         * Added some tests
         * Improved docs
+
 2.05      2013-09-23 11:56:35 Asia/Jerusalem
         * Added a README.mkdn file
         
@@ -26,10 +27,11 @@ Revision history for Text-Bidi
 
 2.03      2013-09-20 12:09:39 Asia/Jerusalem
         * More changes to Makefile.PL
-2.02    12.09.2013
-        Fixed Makefile.PL
+
+2.02      2013-09-12
+        * Fixed Makefile.PL
         
-2.01    11.09.2013
+2.01      2013-09-11
         * Refactored Text::Bidi::Array::* to have a common base class 
           Text::Bidi::Array
         * Significantly improved the documentation of Text::Bidi::Array*
@@ -40,28 +42,29 @@ Revision history for Text-Bidi
           fail on older versions of perl.
         * Added information about the bidi extension for urxvt to the README 
           file
-2.00    10.09.2013
+
+2.00    2013-09-10
         Almost completely rewritten, mostly due to the changes in libfribidi.  
         The interface has changed as well, so this version is incompatible 
         with the previous ones.
 
-0.04    07.02.2008
+0.04      2008-02-07
         * Changed the build system to use ExtUtils::PkgConfig (if available), 
           to find the correct compilation flags (this is required since the 
           new version of libfribidi may need glib to build.)
 
-0.03    18.01.2007
+0.03      2007-01-18
         * The PUSH macros caused some weird results, replaced with my own 
           macros
         * Apparently, Newx did not exist before 5.8.8, defined it if does not 
           exist
 
-0.02    17.01.2007
+0.02      2007-01-17
         * Fixed memory leak in remove_bidi_marks when called with two 
           arguments
         * Fixed bug when calling log2vis with 2 arguments
         * Changed the typemaps to use more perlapi macros (XPUSH, etc.)
 
-0.01    28.08.2006
-        First version
+0.01      2006-08-28
+        * First version
 

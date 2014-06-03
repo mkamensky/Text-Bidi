@@ -15,6 +15,9 @@ binmode STDERR => ':utf8';
 
 use Test::More;
 
+plan skip_all => "'\$TEXT_BIDI_SKIP_UCD' set to $ENV{TEXT_BIDI_SKIP_UCD}"
+    if $ENV{'TEXT_BIDI_SKIP_UCD'};
+
 sub crange { map { chr } $_[0]..$_[1] }
 
 no warnings 'qw';

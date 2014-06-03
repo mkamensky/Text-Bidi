@@ -17,7 +17,7 @@ if ( %fribidi ) {
     $cflags = $fribidi{'cflags'};
 } else {
     unless ( -r '/usr/include/fribidi/fribidi.h' ) {
-        warn <<'EOF'
+        warn <<'EOF';
 
 It seems that fribidi is missing. 
 

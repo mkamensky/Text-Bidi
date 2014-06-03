@@ -1,5 +1,8 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Fixed pod language (rt #96158)
+        * Added missing ; in Makefile.PL
+        * Made ucd.t optional via the TEXT_BIDI_SKIP_UCD env variable
 
 2.08      2013-10-18 15:48:39 Asia/Jerusalem
         * Made ucd.t less fail prone on older versions of Perl and fribidi

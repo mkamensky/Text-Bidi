@@ -1,6 +1,6 @@
 #! perl
 # Created: Tue 21 Aug 2012 12:49:09 PM IDT
-# Last Changed: Wed 25 Sep 2013 12:50:06 PM IDT
+# Last Changed: Sun 16 Nov 2014 08:37:30 AM IST
 # Author: Moshe Kamensky <kamensky@cpan.org>
 
 =head1 NAME
@@ -37,6 +37,15 @@ sub on_start {
     my ($self) = @_;
     $self->{'split'} = decode_utf8($self->x_resource('%.FieldSep')) // 
                        "\x{2502}";
+    my $lre = decode_utf8($self->x_resource('%.LRE')) // '';
+    my $pdf = decode_utf8($self->x_resource('%.PDF')) // '';
+    $self->{'par'} = decode_utf8($self->x_resource('%.par')) // '';
+    $self->{'lre'} = qr/.*?($lre)/;
+    $self->{'pdf'} = qr/.*?$pdf/;
+    #warn "LRE: $self->{'lre'}\n";
+    #warn "PDF: $self->{'pdf'}\n";
+    #warn "$self->{'lre'}, $self->{'llre'}, $self->{'pdf'}, 
+    #$self->{'lpdf'}\n";
     $self->{'spre'} = qr/\Q$self->{'split'}\E/o;
     $self->{'ls'} = length($self->{'split'});
 }
@@ -44,34 +53,68 @@ sub on_start {
 sub on_refresh_begin {
     my ($self) = @_;
     my ($crow, $ccol) = $self->screen_cur;
+    my $pdir;
     for my $i ( 0..$self->nrow-1 ) {
         my $l = $self->ROW_t($i);
+        $pdir = undef if $l =~ /^\s*$/;
         # for speed
-        next unless is_bidi($l);
-        my $r = $self->ROW_r($i);
+        next unless is_bidi($l) or defined $pdir;
+        chomp($l);
+        my @r = @{$self->ROW_r($i)};
+        # add bidi marks
+        if ( $self->{'lre'} ) {
+            while ( $l =~ /\G$self->{'lre'}/gc ) {
+                my $p = pos($l);
+                my $j = $p - length($1);
+                substr($l, $j, 0) = "\x{202a}";
+                splice(@r, $j, 0, 0);
+                $ccol++ if $j <= $ccol and $i == $crow;
+                pos($l) = $p + 1;
+            }
+            pos($l) = undef;
+            while ( $l =~ /\G.*?$self->{'pdf'}/gc ) {
+                my $j = pos($l);
+                substr($l, $j, 0) = "\x{202c}";
+                splice(@r, $j, 0, 0);
+                $ccol++ if $j <= $ccol and $i == $crow;
+                pos($l) = $j + 1;
+            }
+        }
         my @l = split $self->{'spre'}, $l;
-        my (@res, @levels, @map);
+        my (@res, @map);
         # current offset within the line
         my $off = 0;
         # we keep the map, so that we can apply it to the rendition
         for my $part ( @l ) {
-            my ($p, $v) = log2vis($part);
+            my ($p, $v) = log2vis($part, undef, $pdir);
+            #warn "$i: <$part> ==>\n  <$v>\n  dir:" . $p->dir . "\ntype: " .  
+            #join(',', @{$p->types}) . "\n";
             push @res, $v;
-            push @levels, @{$p->levels}, 0;
             push @map, map { $_ + $off } @{$p->map};
-            $off += length($part);
+            $off += length($v);
             # compensate for the field separator
             push @map, $off..$off+$self->{'ls'}-1;
             $off += $self->{'ls'};
+            $pdir = $p->dir if ( $self->{'par'} and not defined $pdir );
         }
         # remove the last field separator
         splice @map, -$self->{'ls'};
         my $res = join($self->{'split'}, @res);
+        # remove bidi marks
+        for my $c ( "\x{202a}", "\x{202c}" ) {
+            my $j = 0;
+            while ( ($j = index($res, $c, $j)) >= 0 ) {
+                #local $"=',';
+                #warn "$res: [@map] j=$j\n";
+                substr($res, $j, 1) = '';
+                splice(@map, $j, 1);
+            }
+        }
         # fake cursor
         if ( $crow == $i ) {
-            $r->[$ccol] |= urxvt::RS_RVid unless $map[$ccol]==$ccol;
+            $r[$ccol] |= urxvt::RS_RVid unless $map[$ccol]==$ccol;
         }
-        my @newr = (@$r)[@map];
+        my @newr = (@r)[@map];
         # keep the logical data for restoring after display
         $self->{'text'}[$i] = $self->ROW_t($i, $res);
         $self->{'rend'}[$i] = $self->ROW_r($i, \@newr);

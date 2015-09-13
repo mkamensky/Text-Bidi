@@ -1,6 +1,6 @@
 #! perl
 # Created: Tue 21 Aug 2012 12:49:09 PM IDT
-# Last Changed: Mon 17 Nov 2014 02:22:41 PM IST
+# Last Changed: Sun 13 Sep 2015 11:46:42 PM IDT
 # Author: Moshe Kamensky <kamensky@cpan.org>
 
 =head1 NAME
@@ -43,8 +43,8 @@ sub on_start {
     my $preset = decode_utf8($self->x_resource('%.ParReset')) // '^\s*$';
     my $preseta = decode_utf8($self->x_resource('%.ParResetAfter')) // '(?!)';
     $self->{'par'} = decode_utf8($self->x_resource('%.par')) // '';
-    $self->{'lre'} = qr/.*?($lre)/;
-    $self->{'pdf'} = qr/.*?$pdf/;
+    $self->{'lre'} = qr/.*?($lre)/ if $lre;
+    $self->{'pdf'} = qr/.*?$pdf/ if $pdf;
     $self->{'pres'} = qr/$preset/;
     $self->{'presa'} = qr/$preseta/;
     #warn "LRE: $self->{'lre'}\n";

@@ -1,6 +1,6 @@
 #! perl
 # Created: Tue 21 Aug 2012 12:49:09 PM IDT
-# Last Changed: Sun 16 Nov 2014 08:37:30 AM IST
+# Last Changed: Mon 17 Nov 2014 02:22:41 PM IST
 # Author: Moshe Kamensky <kamensky@cpan.org>
 
 =head1 NAME
@@ -31,6 +31,7 @@ expression. The default is C<\x{2502}>.
 
 use 5.10.0;
 use Text::Bidi qw(log2vis is_bidi);
+use Text::Bidi::Constants;
 use Encode qw(decode_utf8);
 
 sub on_start {
@@ -39,14 +40,18 @@ sub on_start {
                        "\x{2502}";
     my $lre = decode_utf8($self->x_resource('%.LRE')) // '';
     my $pdf = decode_utf8($self->x_resource('%.PDF')) // '';
+    my $preset = decode_utf8($self->x_resource('%.ParReset')) // '^\s*$';
+    my $preseta = decode_utf8($self->x_resource('%.ParResetAfter')) // '(?!)';
     $self->{'par'} = decode_utf8($self->x_resource('%.par')) // '';
     $self->{'lre'} = qr/.*?($lre)/;
     $self->{'pdf'} = qr/.*?$pdf/;
+    $self->{'pres'} = qr/$preset/;
+    $self->{'presa'} = qr/$preseta/;
     #warn "LRE: $self->{'lre'}\n";
     #warn "PDF: $self->{'pdf'}\n";
     #warn "$self->{'lre'}, $self->{'llre'}, $self->{'pdf'}, 
     #$self->{'lpdf'}\n";
-    $self->{'spre'} = qr/\Q$self->{'split'}\E/o;
+    $self->{'spre'} = qr/\Q$self->{'split'}\E/;
     $self->{'ls'} = length($self->{'split'});
 }
 
@@ -54,11 +59,13 @@ sub on_refresh_begin {
     my ($self) = @_;
     my ($crow, $ccol) = $self->screen_cur;
     my $pdir;
+    my $l;
     for my $i ( 0..$self->nrow-1 ) {
-        my $l = $self->ROW_t($i);
-        $pdir = undef if $l =~ /^\s*$/;
+        $l = $self->ROW_t($i);
+        $pdir = undef if $l =~ $self->{'pres'};
         # for speed
-        next unless is_bidi($l) or defined $pdir;
+        next unless is_bidi($l) or 
+            (defined($pdir) and $pdir == $Text::Bidi::Par::RTL);
         chomp($l);
         my @r = @{$self->ROW_r($i)};
         # add bidi marks
@@ -118,6 +125,8 @@ sub on_refresh_begin {
         # keep the logical data for restoring after display
         $self->{'text'}[$i] = $self->ROW_t($i, $res);
         $self->{'rend'}[$i] = $self->ROW_r($i, \@newr);
+    } continue {
+        $pdir = undef if $l =~ $self->{'presa'};
     }
     ()
 }

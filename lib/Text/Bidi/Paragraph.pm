@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Thu 17 Oct 2013 10:29:42 AM IDT
+# Last Changed: Sun 11 Oct 2015 11:54:00 PM IDT
 
 use 5.10.0;
 use warnings;
@@ -48,10 +48,11 @@ use Text::Bidi;
 
 Create a new object corresponding to a text B<$logical> in logical order. The 
 other arguments are key-value pairs. The only ones that have a meaning at the 
-moment are I<bd>, which supplies the L<Text::Bidi> object to use, and 
-I<dir>, which prescribes the direction of the paragraph. The value of I<dir> 
+moment are I<bd>, which supplies the L<Text::Bidi> object to use, 
+I<dir>, which prescribes the direction of the paragraph, and I<shape>,
+which determines shaping flags. The value of I<dir> 
 is a constant in C<Text::Bidi::Par::> (e.g., C<$Text::Bidi::Par::RTL>; see 
-L<Text::Bidi::Constants>).
+L<Text::Bidi::Constants>). The value of I<shape> is a constant from
 
 Note that the mere creation of B<$par> runs the bidi algorithm on the given 
 text B<$logical> up to the point of reordering (which is dealt with in 
@@ -168,10 +169,41 @@ sub _init {
     ($self->{'dir'}, $self->{'_levels'}) =
         $bd->get_par_embedding_levels($self->types, $self->dir);
     $self->{'_map'} = [0..$#{$self->_unicode}];
+    $self->{'_unicode'} = $self->shaped($self->{'shape'}) 
+        if defined $self->{'shape'};
     $self->{'_mirrored'} = $bd->mirrored($self->levels, $self->_unicode);
     $self->{'_mirpar'} = $bd->internal_to_utf8($self->_mirrored);
     $self->{'_par'} = [split '', $self->_mirpar ];
     $self
+}
+
+=method ar_props
+
+    $props = $self->ar_props
+
+Return the shaping properties (TODO)
+
+=cut
+
+sub ar_props {
+    my ($self) = (@_);
+    $self->{'_ar_props'} //= $self->bd->join_arabic($self->types, $self->levels)
+}
+
+=method shaped
+
+    $shaped = $self->shaped(flags)
+
+Return the shaped paragraph, and fix ar_props (TODO)
+
+=cut
+
+sub shaped {
+    my ($self, $flags) = (@_);
+    ($self->{'_ar_props'}, $self->{'_shaped'}) = $self->bd->shaped(
+        $flags, $self->levels, $self->ar_props, $self->_unicode)
+        unless defined $self->{'_shaped'};
+    $self->{'_shaped'}
 }
 
 =method visual

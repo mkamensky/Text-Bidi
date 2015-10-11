@@ -284,7 +284,7 @@ sub get_bidi_type_name {
     $types = $tb->get_joining_types($internal);
 
 Returns a L<Text::Bidi::Array::Byte> with the list of joining types of the 
-text given by $internal, a representation of the paragraph text, as returned 
+text given by B<$internal>, a representation of the paragraph text, as returned 
 by L</utf8_to_internal>. Wraps fribidi_get_joining_types(3).
 
 =cut
@@ -333,6 +333,49 @@ sub get_par_embedding_levels {
     my $res = $self->tie_byte($out);
     ($par, $res)
 }
+
+=method join_arabic
+
+    $props = $tb->join_arabic($types, $lvl);
+
+Returns a L<Text::Bidi::Array::Byte> with B<$props>, as returned by 
+fribidi_join_arabic(3). The inputs are B<$types>, as returned by 
+L</get_joining_types>, and B<$lvl>, as returned by 
+L</get_par_embedding_levels>.  Wraps fribidi_join_arabic(3).
+
+=cut
+
+sub join_arabic {
+    my $self = S(@_);
+    my ($t, $l) = @_;
+    $self->tie_byte(Text::Bidi::private::join_arabic($$t, $$l))
+}
+
+=method shaped
+
+    ($newp, $shaped) = $tb->shaped($flags, $lvl, $prop, $internal);
+
+Returns the internal representation of the paragraph, with shaping applied.  
+The internal representation of the original paragraph (as returned by 
+L</utf8_to_internal>) should be passed in B<$internal>, while the embedding 
+levels (as returned by L</get_par_embedding_levels>) should be in B<$lvl>. 
+See the documentation of F<fribidi-arabic.h> for B<$flags>, but as a special
+case, a value of C<undef> here skips shaping (returning B<($prop, $internal)>),
+while any other false value becomes the default. B<$prop> is as 
+returned by L</join_arabic>.  This method wraps fribidi_shape_arabic(3).
+
+=cut
+
+sub shaped {
+    my $self = S(@_);
+    my ($flags, $el, $prop, $u) = @_;
+    return ($prop, $u) unless defined $flags;
+    $flags ||= $Text::Bidi::Flag::ARABIC;
+    my ($p, $v) =Text::Bidi::private::my_shape_arabic($flags, $$el, $$prop, 
+        $$u);
+    ($self->tie_byte($p), $self->tie_long($v))
+}
+
 
 =method mirrored
 

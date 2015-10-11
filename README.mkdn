@@ -4,7 +4,7 @@ Text::Bidi - Unicode bidi algorithm using libfribidi
 
 # VERSION
 
-version 2.09
+version 2.10
 
 # SYNOPSIS
 
@@ -200,7 +200,7 @@ utf8\_to\_internal(). Wraps fribidi\_get\_bidi\_types(3).
     $types = $tb->get_joining_types($internal);
 
 Returns a [Text::Bidi::Array::Byte](http://search.cpan.org/perldoc?Text::Bidi::Array::Byte) with the list of joining types of the 
-text given by $internal, a representation of the paragraph text, as returned 
+text given by __$internal__, a representation of the paragraph text, as returned 
 by ["utf8\_to\_internal"](#utf8\_to\_internal). Wraps fribidi\_get\_joining\_types(3).
 
 ## get\_joining\_type\_name
@@ -222,6 +222,28 @@ not given, it defaults to `FRIBIDI_PAR_ON` (neutral).
 
 The output is the resolved paragraph direction _$odir_, and the 
 [Text::Bidi::Array::Byte](http://search.cpan.org/perldoc?Text::Bidi::Array::Byte) array _$lvl_ of embedding levels.
+
+## join\_arabic
+
+    $props = $tb->join_arabic($types, $lvl);
+
+Returns a [Text::Bidi::Array::Byte](http://search.cpan.org/perldoc?Text::Bidi::Array::Byte) with __$props__, as returned by 
+fribidi\_join\_arabic(3). The inputs are __$types__, as returned by 
+["get\_joining\_types"](#get\_joining\_types), and __$lvl__, as returned by 
+["get\_par\_embedding\_levels"](#get\_par\_embedding\_levels).  Wraps fribidi\_join\_arabic(3).
+
+## shaped
+
+    ($newp, $shaped) = $tb->shaped($flags, $lvl, $prop, $internal);
+
+Returns the internal representation of the paragraph, with shaping applied.  
+The internal representation of the original paragraph (as returned by 
+["utf8\_to\_internal"](#utf8\_to\_internal)) should be passed in __$internal__, while the embedding 
+levels (as returned by ["get\_par\_embedding\_levels"](#get\_par\_embedding\_levels)) should be in __$lvl__. 
+See the documentation of `fribidi-arabic.h` for __$flags__, but as a special
+case, a value of `undef` here skips shaping (returning __($prop, $internal)__),
+while any other false value becomes the default. __$prop__ is as 
+returned by ["join\_arabic"](#join\_arabic).  This method wraps fribidi\_shape\_arabic(3).
 
 ## mirrored
 

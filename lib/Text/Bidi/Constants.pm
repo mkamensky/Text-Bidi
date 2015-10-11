@@ -43,7 +43,8 @@ possible constants.
 
 Constants of the form B<FRIBIDI_FLAG_FOO> are converted to 
 C<$Text::Bidi::Flag::FOO>. See fribidi_reorder_line(3) and fribidi_shape(3) 
-for possible constants.
+for possible constants. As a special case, B<FRIBIDI_FLAGS_ARABIC> becomes 
+C<$Text::Bidi::Flag::ARABIC>
 
 =cut
 
@@ -81,6 +82,8 @@ F<fribidi-unicode.h> for possible constants.
         next SYM;
     }
 }
+
+*{"Text::Bidi::Flag::ARABIC"} = *{"Text::Bidi::private::FRIBIDI_FLAGS_ARABIC"};
 
 =back
 

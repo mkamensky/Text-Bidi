@@ -67,6 +67,7 @@ sub new {
     my @bd = ($self->{'bd'});
     $self->{'bd'} = Text::Bidi::S(@bd);
     $self->{'par'} = $par;
+    $self->{'shape'} = 0 if $par =~ /[\p{bc=AL}\p{bc=AN}]/;
     bless $self => $class;
     $self->_init
 }
@@ -187,7 +188,7 @@ Return the shaping properties (TODO)
 
 sub ar_props {
     my ($self) = (@_);
-    $self->{'_ar_props'} //= $self->bd->join_arabic($self->types, $self->levels)
+    $self->{'_ar_props'} //= $self->bd->join_arabic($self->types, $self->levels, $self->bd->get_joining_types($self->_unicode))
 }
 
 =method shaped

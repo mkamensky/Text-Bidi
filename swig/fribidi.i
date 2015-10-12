@@ -238,6 +238,16 @@ my_shape_arabic (
   fribidi_shape_arabic(flags, embedding_levels, len, ar_propsio, str);
 }
 
+void
+my_join_arabic (
+  const FriBidiCharType *bidi_types,
+  const FriBidiStrIndex len,
+  const FriBidiLevel *embedding_levels,
+  FriBidiArabicProp *ar_propsio
+) {
+  fribidi_join_arabic(bidi_types, len, embedding_levels, ar_propsio);
+}
+
 extern const char *fribidi_version_info;
 
 %}

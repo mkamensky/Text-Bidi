@@ -336,19 +336,20 @@ sub get_par_embedding_levels {
 
 =method join_arabic
 
-    $props = $tb->join_arabic($types, $lvl);
+    $props = $tb->join_arabic($bidi_types, $lvl, $join_types);
 
 Returns a L<Text::Bidi::Array::Byte> with B<$props>, as returned by 
-fribidi_join_arabic(3). The inputs are B<$types>, as returned by 
-L</get_joining_types>, and B<$lvl>, as returned by 
-L</get_par_embedding_levels>.  Wraps fribidi_join_arabic(3).
+fribidi_join_arabic(3). The inputs are B<$bidi_types>, as returned by 
+L</get_bidi_types>, B<$lvl>, as returned by 
+L</get_par_embedding_levels>, and B<$join_types> as returned by
+L</get_joining_types>.  Wraps fribidi_join_arabic(3).
 
 =cut
 
 sub join_arabic {
     my $self = S(@_);
-    my ($t, $l) = @_;
-    $self->tie_byte(Text::Bidi::private::join_arabic($$t, $$l))
+    my ($t, $l, $j) = @_;
+    $self->tie_byte(Text::Bidi::private::my_join_arabic($$t, $$l, $$j));
 }
 
 =method shaped
@@ -370,7 +371,7 @@ sub shaped {
     my $self = S(@_);
     my ($flags, $el, $prop, $u) = @_;
     return ($prop, $u) unless defined $flags;
-    $flags ||= $Text::Bidi::Flag::ARABIC;
+    $flags ||= $Text::Bidi::privatec::FRIBIDI_FLAGS_ARABIC;
     my ($p, $v) =Text::Bidi::private::my_shape_arabic($flags, $$el, $$prop, 
         $$u);
     ($self->tie_byte($p), $self->tie_long($v))

@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Sun 11 Oct 2015 11:54:00 PM IDT
+# Last Changed: Tue 13 Oct 2015 12:05:50 PM IDT
 
 use 5.10.0;
 use warnings;
@@ -53,6 +53,9 @@ I<dir>, which prescribes the direction of the paragraph, and I<shape>,
 which determines shaping flags. The value of I<dir> 
 is a constant in C<Text::Bidi::Par::> (e.g., C<$Text::Bidi::Par::RTL>; see 
 L<Text::Bidi::Constants>). The value of I<shape> is a constant from
+fribidi_shape_arabic(3). If it is C<undef>, no shaping is done. If it is 
+missing, default shaping will be performed if the paragraph contains Arabic 
+text.
 
 Note that the mere creation of B<$par> runs the bidi algorithm on the given 
 text B<$logical> up to the point of reordering (which is dealt with in 
@@ -67,7 +70,8 @@ sub new {
     my @bd = ($self->{'bd'});
     $self->{'bd'} = Text::Bidi::S(@bd);
     $self->{'par'} = $par;
-    $self->{'shape'} = 0 if $par =~ /[\p{bc=AL}\p{bc=AN}]/;
+    $self->{'shape'} = 0 
+      if $par =~ /[\p{bc=AL}\p{bc=AN}]/ and not exists $self->{'shape'};
     bless $self => $class;
     $self->_init
 }

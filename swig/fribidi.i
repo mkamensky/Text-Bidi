@@ -71,7 +71,6 @@
 OUTARR(FriBidiCharType, btypes);
 OUTARR(FriBidiJoiningType, jtypes);
 OUTARR(FriBidiLevel, embedding_levels);
-OUTARR(FriBidiArabicProp, ar_props);
     
 OUTSTR(FriBidiChar, out);
 OUTSTR(char, out);
@@ -157,15 +156,11 @@ OUTSTR(char, utf8out);
 %include "fribidi-joining-types.h"
 %include "fribidi-mirroring.h"
 %include "fribidi-bidi.h"
+
+%apply FriBidiLevel *emb_levels { FriBidiArabicProp *ar_props }
+
 %include "fribidi-joining.h"
-
-%typemap(in) FriBidiArabicProp *ar_propsio %{
-  $1 = ($1_ltype)SvPV_nolen($input);
-%}
-
-%typemap(argout) FriBidiArabicProp* ar_propsio %{
-  MXPUSHUA($1, (*_global_p_len))
-%}
+%include "fribidi-arabic.h"
 
 %inline %{
 //%define WANTARRAY
@@ -226,27 +221,6 @@ FriBidiLevel reorder_map (const FriBidiFlags flags,
       flags, bd_types, length, off, base_dir, emb_levels, NULL, map);
 }
 
-void
-my_shape_arabic (
-  FriBidiFlags flags, /* shaping flags */
-  const FriBidiLevel *embedding_levels,
-  const FriBidiStrIndex len,	/* input string length */
-  FriBidiArabicProp *ar_propsio, /* input/output Arabic properties as
-				* computed by fribidi_join_arabic */
-  FriBidiChar *str		/* string to shape */
-) {
-  fribidi_shape_arabic(flags, embedding_levels, len, ar_propsio, str);
-}
-
-void
-my_join_arabic (
-  const FriBidiCharType *bidi_types,
-  const FriBidiStrIndex len,
-  const FriBidiLevel *embedding_levels,
-  FriBidiArabicProp *ar_propsio
-) {
-  fribidi_join_arabic(bidi_types, len, embedding_levels, ar_propsio);
-}
 
 extern const char *fribidi_version_info;
 

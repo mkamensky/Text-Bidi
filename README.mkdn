@@ -228,10 +228,10 @@ The output is the resolved paragraph direction _$odir_, and the
     $props = $tb->join_arabic($bidi_types, $lvl, $join_types);
 
 Returns a [Text::Bidi::Array::Byte](http://search.cpan.org/perldoc?Text::Bidi::Array::Byte) with __$props__, as returned by 
-fribidi\_join\_arabic(3). The inputs are __$bidi_types__, as returned by 
+fribidi\_join\_arabic(3). The inputs are __$bidi\_types__, as returned by 
 ["get\_bidi\_types"](#get\_bidi\_types), __$lvl__, as returned by 
-["get\_par\_embedding\_levels"](#get\_par\_embedding\_levels), and
-__$join_types__, as returned by ["get\_joining\_types"](#get\_joining\_types).  Wraps fribidi\_join\_arabic(3).
+["get\_par\_embedding\_levels"](#get\_par\_embedding\_levels), and __$join\_types__ as returned by
+["get\_joining\_types"](#get\_joining\_types).  Wraps fribidi\_join\_arabic(3).
 
 ## shaped
 

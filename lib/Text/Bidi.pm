@@ -349,7 +349,7 @@ L</get_joining_types>.  Wraps fribidi_join_arabic(3).
 sub join_arabic {
     my $self = S(@_);
     my ($t, $l, $j) = @_;
-    $self->tie_byte(Text::Bidi::private::my_join_arabic($$t, $$l, $$j));
+    $self->tie_byte(Text::Bidi::private::join_arabic($$t, $$l, $$j));
 }
 
 =method shaped
@@ -372,7 +372,7 @@ sub shaped {
     my ($flags, $el, $prop, $u) = @_;
     return ($prop, $u) unless defined $flags;
     $flags ||= $Text::Bidi::privatec::FRIBIDI_FLAGS_ARABIC;
-    my ($p, $v) =Text::Bidi::private::my_shape_arabic($flags, $$el, $$prop, 
+    my ($p, $v) =Text::Bidi::private::shape_arabic($flags, $$el, $$prop, 
         $$u);
     ($self->tie_byte($p), $self->tie_long($v))
 }

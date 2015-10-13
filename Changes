@@ -1,5 +1,6 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Implemented Arabic joining and shaping (thanks to Dmitry Karasik)
 
 2.09      2014-06-03 09:51:08IDT+0300 Asia/Jerusalem
         * Fixed pod language (rt #96158)

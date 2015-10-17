@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+
+2.10      2015-10-17 20:53:51+03:00 Asia/Jerusalem
         * Implemented Arabic joining and shaping (thanks to Dmitry Karasik)
 
 2.09      2014-06-03 09:51:08IDT+0300 Asia/Jerusalem

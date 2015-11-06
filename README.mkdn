@@ -4,7 +4,7 @@ Text::Bidi - Unicode bidi algorithm using libfribidi
 
 # VERSION
 
-version 2.10
+version 2.11
 
 # SYNOPSIS
 
@@ -332,7 +332,7 @@ Moshe Kamensky <kamensky@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Moshe Kamensky.
+This software is copyright (c) 2015 by Moshe Kamensky.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

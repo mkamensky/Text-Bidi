@@ -18,6 +18,4 @@ cpanfile
 Text-Bidi*tar.gz
 Text-Bidi-*/
 old/
-lib/Text/Bidi/private.pm
-private.c
 

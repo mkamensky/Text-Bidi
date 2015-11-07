@@ -41,14 +41,15 @@ possible constants.
 
 =item *
 
-Constants of the form B<FRIBIDI_FLAG_FOO> are converted to 
-C<$Text::Bidi::Flag::FOO>. See fribidi_reorder_line(3) and fribidi_shape(3) 
-for possible constants. As a special case, B<FRIBIDI_FLAGS_ARABIC> becomes 
+Constants of the form B<FRIBIDI_FLAG_FOO> or B<FRIBIDI_FLAGS_FOO> are 
+converted to C<$Text::Bidi::Flag::FOO> or C<$Text::Bidi::Flag::FOO>. See 
+fribidi_reorder_line(3) and fribidi_shape(3) for possible constants. As a 
+special case, B<FRIBIDI_FLAGS_ARABIC> is also available as 
 C<$Text::Bidi::Flag::ARABIC>
 
 =cut
 
-    for my $kind ( qw(Type Mask Par Flag) ) {
+    for my $kind ( qw(Type Mask Par Flag Flags) ) {
         if ( $sym =~ /FRIBIDI_\U${kind}\E_([A-Z_]*)$/ ) {
             *{"Text::Bidi::${kind}::$1"} = *{"Text::Bidi::private::$sym"};
             next SYM;

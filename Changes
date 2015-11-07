@@ -1,5 +1,8 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Fix versioning issue (https://rt.cpan.org/Public/Bug/Display.html?id=108498)
+        * Fixed a bug in combining characters (Niqqud) handling, and added 
+          support for it in the urxvt plugin
 
 2.10      2015-10-17 20:53:51+03:00 Asia/Jerusalem
         * Implemented Arabic joining and shaping (thanks to Dmitry Karasik)

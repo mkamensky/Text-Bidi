@@ -305,6 +305,27 @@ The output consists of the modified map __$mout__ (a
 [Text::Bidi::Array::Long](http://search.cpan.org/perldoc?Text::Bidi::Array::Long)), and possibly modified embedding levels 
 __$elout__.
 
+
+
+
+
+
+
+method remove\_bidi\_marks
+
+    ($v, $to, $from, $levels) = 
+        $tb->remove_bidi_marks($v[, $to[, $from[, $levels]]])
+
+Remove the explicit bidi marks from `$v`. The optional arguments, if given, 
+are the map from the logical to the visual string, the inverse map, and 
+embedding levels, respectively, as returned by ["reorder\_map"](#reorder\_map). The inverse 
+map `$from` can be obtained from the direct one `$to` by a command like:
+
+    @$from[@$map] = 0..$#$map
+
+Each of the arguments can be `undef`, in which case it will be skipped. This 
+implements step X9, see fribidi\_remove\_bidi\_marks(3).
+
 # BUGS
 
 There are no real tests for any of this.

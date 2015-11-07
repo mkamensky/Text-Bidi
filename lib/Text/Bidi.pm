@@ -2,6 +2,7 @@ use 5.10.0;
 use warnings;
 #no warnings 'experimental';
 use strict 'vars';
+#use Carp::Always;
 
 package Text::Bidi;
 # ABSTRACT: Unicode bidi algorithm using libfribidi
@@ -204,11 +205,13 @@ sub new {
 
 sub tie_byte {
     my $self = shift;
+    return \undef unless defined $_[0];
     $self->{'tie_byte'}->new(@_)
 }
 
 sub tie_long {
     my $self = shift;
+    return \undef unless defined $_[0];
     $self->{'tie_long'}->new(@_)
 }
 
@@ -371,7 +374,7 @@ sub shaped {
     my $self = S(@_);
     my ($flags, $el, $prop, $u) = @_;
     return ($prop, $u) unless defined $flags;
-    $flags ||= $Text::Bidi::privatec::FRIBIDI_FLAGS_ARABIC;
+    $flags ||= $Text::Bidi::private::FRIBIDI_FLAGS_ARABIC;
     my ($p, $v) =Text::Bidi::private::shape_arabic($flags, $$el, $$prop, 
         $$u);
     ($self->tie_byte($p), $self->tie_long($v))
@@ -493,9 +496,48 @@ sub reorder_map {
 
     $map = $self->tie_long($map) unless eval {defined $$map};
 
+
     my ($lev, $elout, $mout) = Text::Bidi::private::reorder_map(
         $flags, $$bt, $off, $len, $par, $$el, $$map);
+
     ($elout, $mout)
+}
+
+# TODO this doesn't work
+
+=for comment
+
+method remove_bidi_marks
+
+    ($v, $to, $from, $levels) = 
+        $tb->remove_bidi_marks($v[, $to[, $from[, $levels]]])
+
+Remove the explicit bidi marks from C<$v>. The optional arguments, if given, 
+are the map from the logical to the visual string, the inverse map, and 
+embedding levels, respectively, as returned by L</reorder_map>. The inverse 
+map C<$from> can be obtained from the direct one C<$to> by a command like:
+
+    @$from[@$map] = 0..$#$map
+
+Each of the arguments can be C<undef>, in which case it will be skipped. This 
+implements step X9, see fribidi_remove_bidi_marks(3).
+
+=cut
+
+sub remove_bidi_marks {
+    my $self = S(@_);
+    my ($v, $to, $from, $levels) = @_;
+    $to = $self->tie_long($to) unless eval {defined $$to};
+    if ( defined($from) ) {
+        $from = $self->tie_long($from) unless eval {defined $$from};
+    } else {
+        $from = \undef;
+    }
+    $levels = $self->tie_byte($levels) unless eval {defined $$levels};
+    no warnings 'uninitialized';
+    my ($len, $vout, $toout, $fromout, $levelsout) = 
+      Text::Bidi::private::remove_bidi_marks($v, $$to, $$from, $$levels);
+    ($vout, $toout, $fromout, $levelsout)
 }
 
 =func log2vis

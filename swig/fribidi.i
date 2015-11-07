@@ -106,7 +106,7 @@ OUTSTR(char, utf8out);
 
 %apply const FriBidiChar* str { const FriBidiLevel* embedding_levels }
 
-/* input/output str */
+/* input/output str, length not determined by str (e.g., shape_mirroring) */
 %typemap(in) FriBidiChar* str %{
   $1 = ($1_ltype)SvPV_nolen($input);
 %}
@@ -114,6 +114,18 @@ OUTSTR(char, utf8out);
 %typemap(argout) FriBidiChar* str %{
   MXPUSHP((const char *)($1), (STRLEN)( (*_global_p_len) * sizeof($*1_ltype)));
 %}
+
+/* input/output str, length determined by str (e.g., remove_bidi_marks) */
+%typemap(in) FriBidiChar* strl (char* buf = 0, size_t size = 0) %{
+  buf = SvPV($input, size);
+  *_global_p_len = (FriBidiStrIndex)(size/sizeof($*1_ltype));
+  $1 = ($1_ltype)(buf);
+%}
+
+%typemap(argout) FriBidiChar* strl %{
+  MXPUSHP((const char *)($1), (STRLEN)( (*_global_p_len) * sizeof($*1_ltype)));
+%}
+
 
 %typemap(argout) const FriBidiChar* str ""
 
@@ -162,6 +174,8 @@ OUTSTR(char, utf8out);
 %include "fribidi-joining.h"
 %include "fribidi-arabic.h"
 
+%apply FriBidiStrIndex *map { FriBidiStrIndex *positions_to_this, 
+                              FriBidiStrIndex *position_from_this_list }
 %inline %{
 //%define WANTARRAY
 //(GIMME_V == G_ARRAY)
@@ -220,6 +234,20 @@ FriBidiLevel reorder_map (const FriBidiFlags flags,
   return fribidi_reorder_line(
       flags, bd_types, length, off, base_dir, emb_levels, NULL, map);
 }
+
+/* This is from fribidi-deprecated.h. According to
+ * http://permalink.gmane.org/gmane.comp.internationalization.fribidi/531
+ * and in contrast with the docs, this is not deprecated
+ */
+FriBidiStrIndex fribidi_remove_bidi_marks (
+  FriBidiChar *strl,             /* input string to clean */
+  const FriBidiStrIndex len,    /* input string length */
+  FriBidiStrIndex *positions_to_this,   /* list mapping positions to the
+                                           order used in str */
+  FriBidiStrIndex *position_from_this_list, /* list mapping positions 
+                                                  from the order used in str */
+  FriBidiLevel *emb_levels        /* list of embedding levels */
+);
 
 
 extern const char *fribidi_version_info;

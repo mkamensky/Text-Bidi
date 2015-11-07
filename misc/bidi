@@ -1,6 +1,6 @@
 #! perl
 # Created: Tue 21 Aug 2012 12:49:09 PM IDT
-# Last Changed: Sun 13 Sep 2015 11:46:42 PM IDT
+# Last Changed: Sun 08 Nov 2015 12:56:24 AM IST
 # Author: Moshe Kamensky <kamensky@cpan.org>
 
 =head1 NAME
@@ -21,11 +21,56 @@ one which corresponds to the current insertion point.
 To enable the extension, add C<bidi> to the I<Urxvt.perl-ext-common> 
 resource. See urxvt(1) and urxvtperl(1) for other options and more details.
 
-The extension recognises one resource, I<Urxvt.bidi.FieldSep>. This should be 
-a string on which each line is split before applying the Bidi algorithm. This 
-permits creating tables, where each cell is treated separately, e.g., in the 
-index of an email client. Note that this is a string, not a regular 
-expression. The default is C<\x{2502}>.
+The extension recognises the following resources:
+
+=over
+
+=item I<bidi.FieldSep>
+
+This should be a string on which each line is split before applying the Bidi 
+algorithm. This permits creating tables, where each cell is treated 
+separately, e.g., in the index of an email client. Note that this is a 
+string, not a regular expression. The default is C<\x{2502}>.
+
+=item I<bidi.LRE>
+
+A regular expression. The plugin insert an explicit left-right mark where it 
+matches.
+
+=item I<bidi.PDF>
+
+A regular expression. The plugin insert a PDF mark (end of LRE) where it 
+matches.
+
+=item I<bidi.par>
+
+Boolean, if true work in paragraph mode: the paragraph direction is not reset 
+on each line, but only on lines that start or end a paragraph
+
+=item I<bidi.ParReset>
+
+A regular expression. A line matching this will start a new paragraph.
+
+=item I<bidi.ParResetAfter>
+
+Similar to I<bidi.ParReset>, but the paragraph starts after the matching 
+line.
+
+=back
+
+For example, I use urxvt with this plugin to edit LaTeX documents in Hebrew.  
+I have the following resources defined:
+
+    URxvt.bidi.LRE: \\\\[([]
+    URxvt.bidi.PDF: \\\\[)\\]]
+    urxvt-vimh.bidi.par: true
+    urxvt-vimh.cursorUnderline: true
+    urxvt-vimh.bidi.ParReset: ^\\s*$|^\\\\begin|^\\\\\\[
+    urxvt-vimh.bidi.ParResetAfter: ^\\\\end|\\\\\\]$
+
+This causes inline equations (delimited by C<\(> and C<\)>) be displayed 
+correctly, and equation environments be considered a paragraph (so that it is 
+displayed on the left).
 
 =cut
 
@@ -87,6 +132,13 @@ sub on_refresh_begin {
                 pos($l) = $j + 1;
             }
         }
+        # expand combining chars (Nikud) from one illegal char to two legal
+        $l = $self->special_decode($l);
+        while ( $l =~ /[\x{5b0}-\x{5bb}]/g ) {
+            my $j = pos($l) - 1;
+            splice(@r, $j, 0, 0);
+            $ccol++ if $j <= $ccol and $i == $crow;
+        }
         my @l = split $self->{'spre'}, $l;
         my (@res, @map);
         # current offset within the line
@@ -94,10 +146,14 @@ sub on_refresh_begin {
         # we keep the map, so that we can apply it to the rendition
         for my $part ( @l ) {
             my ($p, $v) = log2vis($part, undef, $pdir);
+            my $types = $p->types;
             #warn "$i: <$part> ==>\n  <$v>\n  dir:" . $p->dir . "\ntype: " .  
-            #join(',', @{$p->types}) . "\n";
+            #join(',', map { my $cc = substr($part, $_, 1); '[' . $cc . ':' .  
+            #sprintf("%x", ord($cc)) . ":" . $types->[$_] . ']' } 
+            #0..$#{$types}) . "\n\n";
             push @res, $v;
-            push @map, map { $_ + $off } @{$p->map};
+            my @mmap = @{$p->map};
+            push @map, map { $_ + $off } @mmap;
             $off += length($v);
             # compensate for the field separator
             push @map, $off..$off+$self->{'ls'}-1;
@@ -108,20 +164,18 @@ sub on_refresh_begin {
         splice @map, -$self->{'ls'};
         my $res = join($self->{'split'}, @res);
         # remove bidi marks
-        for my $c ( "\x{202a}", "\x{202c}" ) {
-            my $j = 0;
-            while ( ($j = index($res, $c, $j)) >= 0 ) {
-                #local $"=',';
-                #warn "$res: [@map] j=$j\n";
-                substr($res, $j, 1) = '';
-                splice(@map, $j, 1);
-            }
+        while ( $res =~ /[\x{202a}\x{202c}\x{5b0}-\x{5bb}]/g ) {
+            local $"=',';
+            #warn "[@map] j=" . pos($res) . "\n";
+            $map[pos($res)-1] = -1;
         }
+        $res =~ s/[\x{202a}-\x{202c}]//g;
+        $res = $self->special_encode($res); 
         # fake cursor
         if ( $crow == $i ) {
             $r[$ccol] |= urxvt::RS_RVid unless $map[$ccol]==$ccol;
         }
-        my @newr = (@r)[@map];
+        my @newr = (@r)[grep { $_ >= 0 } @map];
         # keep the logical data for restoring after display
         $self->{'text'}[$i] = $self->ROW_t($i, $res);
         $self->{'rend'}[$i] = $self->ROW_r($i, \@newr);

@@ -1,5 +1,5 @@
 # Created: Tue 27 Aug 2013 04:10:03 PM IDT
-# Last Changed: Tue 13 Oct 2015 12:05:50 PM IDT
+# Last Changed: Sat 07 Nov 2015 10:27:08 PM IST
 
 use 5.10.0;
 use warnings;
@@ -252,7 +252,7 @@ sub visual {
     $len //= $self->len;
     my $mlen = $self->len - $off;
     $mlen = $len if $len < $mlen;
-    if (my $break = eval { $flags->{'break'} } ) {
+    if (defined($flags) and my $break = eval { $flags->{'break'} } ) {
         my $lb = length($break);
         my $nlen = rindex($self->par, $break, $off + $mlen - $lb) - $off + $lb;
         $mlen = $nlen if $nlen > 0;
@@ -261,8 +261,15 @@ sub visual {
     (my $levels, $self->{'_map'}) = 
       $bd->reorder_map($self->types, $off, $mlen, $self->dir, 
                        $self->map, $self->levels, $flags);
+    my $visual = $bd->reorder($self->_par, $self->map, $off, $mlen);
+    # TODO This does not currently work
+    if (defined($flags) and eval { $flags->{'remove_marks'} } ) {
+        ($visual, $self->{'_map'}, undef, $levels) = 
+          $bd->remove_bidi_marks($visual, $self->map, undef, $levels);
+    }
     $self->{'_levels'} = $bd->tie_byte($levels);
-    $bd->reorder($self->_par, $self->map, $off, $mlen)
+    
+    $visual
 }
 
 1;

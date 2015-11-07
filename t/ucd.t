@@ -91,6 +91,9 @@ foreach ( <$err> ) {
     $known{$1} = $2;
 }
 
+# we don't reorder NSM
+my $flags = $Text::Bidi::Flags::DEFAULT & ~$Text::Bidi::Flag::REORDER_NSM;
+
 foreach ( <$fh> ) {
     next if /^\s*(#|$)/;
     chomp;
@@ -114,7 +117,7 @@ foreach ( <$fh> ) {
             my $pdname = get_bidi_type_name($pdir);
             skip 'Test fails in libfribidi', 2
                 if defined $known{"$ing;$pdname"};
-            my ($p, $vis) = log2vis($in, length($in), $pdir);
+            my ($p, $vis) = log2vis($in, length($in), $pdir, $flags);
             my $lev = $p->levels;
             my @olev = @$lev;
             $olev[$_] = 'x' foreach @levund;

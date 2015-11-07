@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+
+2.11      2015-11-08 01:08:59+02:00 Asia/Jerusalem
         * Fix versioning issue (https://rt.cpan.org/Public/Bug/Display.html?id=108498)
         * Fixed a bug in combining characters (Niqqud) handling, and added 
           support for it in the urxvt plugin

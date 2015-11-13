@@ -32,6 +32,16 @@ EOF
     $cflags = '-I/usr/include/fribidi -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include';
 }
 
+my %PM = map {$_ => '$(INST_LIB)/' . $_} qw(
+lib/Text/Bidi/private.pm
+##{
+use File::Find;
+my $result;
+find(sub { $result .= "$File::Find::name\n" if /pm$/ }, 'lib');
+$result
+##}
+);
+
 my ##{
     use Data::Dumper;
     $default_args{'NAME'} = 'Text::Bidi::private';
@@ -42,6 +52,7 @@ my ##{
     INC => $cflags,
     LIBS => $libs,
     OBJECT => 'private.o',
+    PM => \%PM,
 );
 
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
@@ -77,9 +88,11 @@ WriteMakefile(%WriteMakefileArgs);
 
 sub MY::postamble {
     <<EOF;
-private.c: swig/fribidi.i
-	-/usr/bin/swig -perl -Wall -I/usr/include $cflags -outdir lib/Text/Bidi/ -o \$@ \$<
+pm_to_blib: lib/Text/Bidi/private.pm
 
+private.c lib/Text/Bidi/private.pm: swig/fribidi.i
+	-/usr/bin/swig -perl -Wall -I/usr/include $cflags -outdir lib/Text/Bidi/ -o private.c \$<
+ 
 swig-clean: clean
 	-rm private.c lib/Text/Bidi/private.pm
 

@@ -1,7 +1,4 @@
 #! perl
-# Created: Tue 21 Aug 2012 12:49:09 PM IDT
-# Last Changed: Sun 08 Nov 2015 12:56:24 AM IST
-# Author: Moshe Kamensky <kamensky@cpan.org>
 
 =head1 NAME
 
@@ -25,6 +22,10 @@ The extension recognises the following resources:
 
 =over
 
+=cut
+
+#:META:RESOURCE:%.FieldSep:string:Separator between different fields
+
 =item I<bidi.FieldSep>
 
 This should be a string on which each line is split before applying the Bidi 
@@ -32,24 +33,44 @@ algorithm. This permits creating tables, where each cell is treated
 separately, e.g., in the index of an email client. Note that this is a 
 string, not a regular expression. The default is C<\x{2502}>.
 
+=cut
+
+#:META:RESOURCE:%.LRE:string:Insert LRE mark where this matches
+
 =item I<bidi.LRE>
 
 A regular expression. The plugin insert an explicit left-right mark where it 
 matches.
+
+=cut
+
+#:META:RESOURCE:%.PDF:string:Insert PDF mark where this matches
 
 =item I<bidi.PDF>
 
 A regular expression. The plugin insert a PDF mark (end of LRE) where it 
 matches.
 
+=cut
+
+#:META:RESOURCE:%.par:boolean:Work in paragraph mode
+
 =item I<bidi.par>
 
 Boolean, if true work in paragraph mode: the paragraph direction is not reset 
 on each line, but only on lines that start or end a paragraph
 
+=cut
+
+#:META:RESOURCE:%.ParReset:string:Start a new paragraph where this matches
+
 =item I<bidi.ParReset>
 
 A regular expression. A line matching this will start a new paragraph.
+
+=cut
+
+#:META:RESOURCE:%.ParResetAfter:string:Start a new paragraph after this matches
 
 =item I<bidi.ParResetAfter>
 

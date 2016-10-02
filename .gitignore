@@ -19,4 +19,6 @@ Text-Bidi*tar.gz
 Text-Bidi-*/
 old/
 .history
+lib/Text/Bidi/private.pm
+private.c
 

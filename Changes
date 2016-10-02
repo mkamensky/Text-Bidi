@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+
+2.12      2016-10-02 18:17:21+03:00 Asia/Jerusalem
         * Added META comments to misc/bidi
         * Misc build and install changes, issues #108736, #108738 (Thanks 
           ppisar@redhat.com) 

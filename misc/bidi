@@ -134,6 +134,8 @@ sub on_refresh_begin {
             (defined($pdir) and $pdir == $Text::Bidi::Par::RTL);
         chomp($l);
         my @r = @{$self->ROW_r($i)};
+        # expand combining chars (Nikud) from one illegal char to two legal
+        $l = $self->special_decode($l);
         # add bidi marks
         if ( $self->{'lre'} ) {
             while ( $l =~ /\G$self->{'lre'}/gc ) {
@@ -153,8 +155,7 @@ sub on_refresh_begin {
                 pos($l) = $j + 1;
             }
         }
-        # expand combining chars (Nikud) from one illegal char to two legal
-        $l = $self->special_decode($l);
+        # nikud
         while ( $l =~ /[\x{5b0}-\x{5bb}]/g ) {
             my $j = pos($l) - 1;
             splice(@r, $j, 0, 0);
@@ -185,12 +186,10 @@ sub on_refresh_begin {
         splice @map, -$self->{'ls'};
         my $res = join($self->{'split'}, @res);
         # remove bidi marks
-        while ( $res =~ /[\x{202a}\x{202c}\x{5b0}-\x{5bb}]/g ) {
-            local $"=',';
-            #warn "[@map] j=" . pos($res) . "\n";
+        while ( $res =~ /[\x{200b}-\x{200f}\x{202a}-\x{202f}\x{5b0}-\x{5bb}]/g ) {
             $map[pos($res)-1] = -1;
         }
-        $res =~ s/[\x{202a}-\x{202c}]//g;
+        $res =~ s/[\x{200b}-\x{200f}\x{202a}-\x{202f}]//g;
         $res = $self->special_encode($res); 
         # fake cursor
         if ( $crow == $i ) {

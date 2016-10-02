@@ -32,12 +32,12 @@ EOF
     $cflags = '-I/usr/include/fribidi -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include';
 }
 
-my %PM = map {$_ => '$(INST_LIB)/' . $_} qw(
-lib/Text/Bidi/private.pm
+my %PM = map { 'lib/' . $_ => '$(INST_LIB)/' . $_} qw(
+Text/Bidi/private.pm
 ##{
 use File::Find;
 my $result;
-find(sub { $result .= "$File::Find::name\n" if /pm$/ }, 'lib');
+find(sub { $result .= "$1\n" if $File::Find::name =~ m!lib/(.*pm)$! }, 'lib');
 $result
 ##}
 );

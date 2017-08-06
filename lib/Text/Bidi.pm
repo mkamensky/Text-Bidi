@@ -584,7 +584,7 @@ helps if we want to short-circuit.
 
 =cut
 
-sub is_bidi { $_[0] =~ /\p{bc=R}/ }
+sub is_bidi { $_[0] =~ /\p{bc=R}|\p{bc=AL}/ }
 
 =func get_mirror_char()
 

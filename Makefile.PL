@@ -1,11 +1,15 @@
 use strict;
 use warnings;
+use version 0.77;
 
 ##{ $perl_prereq ? qq[use $perl_prereq;] : ''; ##}
 
 use ExtUtils::MakeMaker ##{ $eumm_version ##};
 
 my (%fribidi, $libs, $cflags);
+
+my $min_fribidi = '1.0.0';
+
 eval { require ExtUtils::PkgConfig };
 if ( $@ ) {
     warn $@;
@@ -15,6 +19,13 @@ if ( $@ ) {
 if ( %fribidi ) {
     $libs = $fribidi{'libs'};
     $cflags = $fribidi{'cflags'};
+    if (version->parse($fribidi{'modversion'}) < version->parse($min_fribidi)) {
+        warn <<EOF;
+Found an old version of the fribidi library. This version
+of Text::Bidi requires fribidi >= $min_fribidi
+EOF
+        exit 0;
+    }
 } else {
     unless ( -r '/usr/include/fribidi/fribidi.h' ) {
         warn <<'EOF';

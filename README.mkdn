@@ -4,7 +4,7 @@ Text::Bidi - Unicode bidi algorithm using libfribidi
 
 # VERSION
 
-version 2.15
+version 2.16
 
 # SYNOPSIS
 
@@ -60,9 +60,9 @@ that the first stage requires only the text of the paragraph, while the
 second requires knowledge of the width of the displayed lines. The module (or 
 the library) does not determine how the text is broken into paragraphs.
 
-The full interface is provided by [Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph), see there for 
+The full interface is provided by [Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph), see there for 
 details. This module provides an abbreviation, ["log2vis"](#log2vis), which combines 
-creating a paragraph object with calling ["visual" in Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph#visual) on 
+creating a paragraph object with calling ["visual" in Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph#visual) on 
 it.  It is particularly useful in the case that the whole paragraph should be 
 displayed at once, and the display width is known:
 
@@ -97,21 +97,21 @@ simultaneously. If you are interested in deriving from this class, please see
 
 Return the string representation of a Bidi character type, as in 
 fribidi\_get\_bidi\_type\_name(3). Note that for the above example, one needs to 
-use [Text::Bidi::Constants](https://metacpan.org/pod/Text::Bidi::Constants).
+use [Text::Bidi::Constants](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AConstants).
 
 ## log2vis
 
     ($p, $visual) = log2vis($logical[,$width[,$dir[,$flags]]]);
 
 Convert the input paragraph **$logical** to visual. This constructs a 
-[Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph) object, and calls ["visual" in Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph#visual) 
+[Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph) object, and calls ["visual" in Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph#visual) 
 several times, as required. **$width** is the maximum width of a line, 
 defaulting to the whole length of the paragraph.  **$dir** is the base 
 direction of the paragraph, determined automatically if not provided.  
-**$flags** is as in ["visual" in Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph#visual). The paragraph will be 
+**$flags** is as in ["visual" in Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph#visual). The paragraph will be 
 justified to the right if it is RTL.
 
-The output consists of the [Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph) object **$p** and the 
+The output consists of the [Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph) object **$p** and the 
 visual string **$visual**.
 
 ## is\_bidi()
@@ -165,10 +165,10 @@ in your module.
 
     $tb = new Text::Bidi [tie_byte => ..., tie_long => ...];
 
-Create a new [Text::Bidi](https://metacpan.org/pod/Text::Bidi) object. If the _tie\_byte_ or _tie\_long_ options 
+Create a new [Text::Bidi](https://metacpan.org/pod/Text%3A%3ABidi) object. If the _tie\_byte_ or _tie\_long_ options 
 are given, they should be the names (strings) of the classes used as dual 
-life arrays, most probably derived class of [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text::Bidi::Array::Byte) and 
-[Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long), respectively.
+life arrays, most probably derived class of [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3AByte) and 
+[Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong), respectively.
 
 This method is probably of little interest for standard (procedural) use.
 
@@ -177,7 +177,7 @@ This method is probably of little interest for standard (procedural) use.
     $la = $tb->utf8_to_internal($str);
 
 Convert the Perl string _$str_ into the representation used by libfribidi.  
-The result will be a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long).
+The result will be a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong).
 
 ## internal\_to\_utf8
 
@@ -185,13 +185,13 @@ The result will be a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bi
 
 Convert the long array _$la_, representing a string encoded in to format 
 used by libfribidi, into a Perl string. The array _$la_ can be either a 
-[Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long), or anything that can be used to construct it.
+[Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong), or anything that can be used to construct it.
 
 ## get\_bidi\_types
 
     $types = $tb->get_bidi_types($internal);
 
-Returns a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long) with the list of Bidi types of the text 
+Returns a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong) with the list of Bidi types of the text 
 given by $internal, a representation of the paragraph text, as returned by 
 utf8\_to\_internal(). Wraps fribidi\_get\_bidi\_types(3).
 
@@ -199,7 +199,7 @@ utf8\_to\_internal(). Wraps fribidi\_get\_bidi\_types(3).
 
     $types = $tb->get_joining_types($internal);
 
-Returns a [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text::Bidi::Array::Byte) with the list of joining types of the 
+Returns a [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3AByte) with the list of joining types of the 
 text given by **$internal**, a representation of the paragraph text, as returned 
 by ["utf8\_to\_internal"](#utf8_to_internal). Wraps fribidi\_get\_joining\_types(3).
 
@@ -209,25 +209,25 @@ by ["utf8\_to\_internal"](#utf8_to_internal). Wraps fribidi\_get\_joining\_types
 
 Return the string representation of a joining character type, as in 
 fribidi\_get\_joining\_type\_name(3). Note that for the above example, one needs 
-to use [Text::Bidi::Constants](https://metacpan.org/pod/Text::Bidi::Constants).
+to use [Text::Bidi::Constants](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AConstants).
 
 ## get\_par\_embedding\_levels
 
     ($odir, $lvl) = $tb->get_par_embedding_levels($types[, $dir]);
 
 Return the embedding levels of the characters, whose types are given by 
-_$types_. _$types_ is a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long) of Bidi types, as 
+_$types_. _$types_ is a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong) of Bidi types, as 
 returned by ["get\_bidi\_types"](#get_bidi_types). _$dir_ is the base paragraph direction. If 
 not given, it defaults to `FRIBIDI_PAR_ON` (neutral).
 
 The output is the resolved paragraph direction _$odir_, and the 
-[Text::Bidi::Array::Byte](https://metacpan.org/pod/Text::Bidi::Array::Byte) array _$lvl_ of embedding levels.
+[Text::Bidi::Array::Byte](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3AByte) array _$lvl_ of embedding levels.
 
 ## join\_arabic
 
     $props = $tb->join_arabic($bidi_types, $lvl, $join_types);
 
-Returns a [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text::Bidi::Array::Byte) with **$props**, as returned by 
+Returns a [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3AByte) with **$props**, as returned by 
 fribidi\_join\_arabic(3). The inputs are **$bidi\_types**, as returned by 
 ["get\_bidi\_types"](#get_bidi_types), **$lvl**, as returned by 
 ["get\_par\_embedding\_levels"](#get_par_embedding_levels), and **$join\_types** as returned by
@@ -284,7 +284,7 @@ optional:
 
 - **$map**
 
-    An array ref (or a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long)) from a previous call (with a 
+    An array ref (or a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong)) from a previous call (with a 
     different interval). The method is called repeatedly for the same paragraph, 
     with different intervals, and the reordering map is updated for the given 
     interval. If not defined, initialised to the identity map.
@@ -298,11 +298,11 @@ optional:
 
     A specification of flags, as described in fribidi\_reorder\_line(3). The flags 
     can be given either as a number (using `$Text::Bidi::Flags::..` from 
-    [Text::Bidi::Constants](https://metacpan.org/pod/Text::Bidi::Constants)), or as a hashref of the form
+    [Text::Bidi::Constants](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AConstants)), or as a hashref of the form
     `{REORDER_NSM => 1}`. Defaults to `FRIBIDI_FLAGS_DEFAULT`.
 
 The output consists of the modified map **$mout** (a 
-[Text::Bidi::Array::Long](https://metacpan.org/pod/Text::Bidi::Array::Long)), and possibly modified embedding levels 
+[Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong)), and possibly modified embedding levels 
 **$elout**.
 
 method remove\_bidi\_marks
@@ -329,9 +329,9 @@ welcome!
 
 # SEE ALSO
 
-[Text::Bidi::Paragraph](https://metacpan.org/pod/Text::Bidi::Paragraph)
+[Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph)
 
-[Text::Bidi::Constants](https://metacpan.org/pod/Text::Bidi::Constants)
+[Text::Bidi::Constants](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AConstants)
 
 [Encode](https://metacpan.org/pod/Encode)
 

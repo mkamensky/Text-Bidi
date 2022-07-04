@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Add Unicode license (#143543)
+        * Cleanup some tests
 
 2.17      2022-06-28 22:33:30+03:00 Asia/Jerusalem
         * Fix #142417 (patch by Petr Pisar)

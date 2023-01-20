@@ -102,7 +102,7 @@ sub MY::postamble {
 pm_to_blib: lib/Text/Bidi/private.pm
 
 private.c lib/Text/Bidi/private.pm: swig/fribidi.i
-	-/usr/bin/swig -perl -Wall -I/usr/include $cflags -outdir lib/Text/Bidi/ -o private.c \$<
+	/usr/bin/swig -perl -Wall -I/usr/include $cflags -outdir lib/Text/Bidi/ -o private.c \$<
  
 swig-clean: clean
 	-rm private.c lib/Text/Bidi/private.pm

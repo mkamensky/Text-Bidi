@@ -2,10 +2,10 @@ use 5.010;
 use strict;
 use warnings;
 use Test::More;
-use Config;
 use FFI::CheckLib qw(find_lib_or_die);
 use IPC::Open3;
 use Symbol qw(gensym);
+use File::Temp qw(tempdir);
 use Text::Bidi qw(log2vis fribidi_version_num unicode_version);
 use Text::Bidi::Constants;
 
@@ -68,11 +68,18 @@ is_deeply [Text::Bidi::private::shape_arabic(0, '', '', '')], [[], ''],
 sub load_with_library {
     my ($library) = @_;
     local $ENV{TEXT_BIDI_FRIBIDI_LIB} = $library;
-    local $ENV{PERL5LIB} = join $Config::Config{path_sep} || ':',
-        grep { !ref } @INC;
+    # Reconstructing PERL5LIB can change @INC ordering, and PERL5OPT can load
+    # an installed copy before the checkout. Preserve the parent's exact paths
+    # after startup, before requiring any Text::Bidi module in the child.
+    my @inc = grep { !ref } @INC;
+    local $ENV{PERL5LIB} = '';
+    local $ENV{PERL5OPT} = '';
     my $err = gensym;
-    my $pid = open3(my $in, my $out, $err, $^X, '-MText::Bidi', '-e',
-        'print scalar Text::Bidi::log2vis("abc")');
+    my $pid = open3(my $in, my $out, $err, $^X, '-e', q{
+        BEGIN { @INC = @ARGV; @ARGV = (); }
+        require Text::Bidi;
+        print scalar Text::Bidi::log2vis("abc");
+    }, '--', @inc);
     close $in;
     local $/;
     my $stdout = <$out>;
@@ -88,5 +95,24 @@ is $stdout, 'abc', 'public API works with explicit library path';
 ($status, $stdout, $stderr) = load_with_library($library . '.does-not-exist');
 ok $status != 0, 'missing explicitly selected library fails to load';
 like $stderr, qr/FriBidi|fribidi/, 'missing-library diagnostic identifies FriBidi';
+
+# An older installed copy can handle ASCII without loading the FFI backend.
+# Startup include paths must not let that copy replace the module under test.
+my $installed = tempdir(CLEANUP => 1);
+mkdir "$installed/Text" or die "Cannot create fixture directory: $!";
+open my $old, '>', "$installed/Text/Bidi.pm" or die "Cannot write fixture: $!";
+print {$old} "package Text::Bidi; sub log2vis { return 'abc' } 1;\n";
+close $old or die "Cannot close fixture: $!";
+{
+    local $ENV{PERL5OPT} = "-I$installed";
+    ($status, $stdout, $stderr) = load_with_library($library);
+    is $status, 0, 'valid library loads despite a conflicting startup include path'
+        or diag $stderr;
+    is $stdout, 'abc', 'public API works despite a conflicting startup include path';
+    ($status, $stdout, $stderr) = load_with_library($library . '.does-not-exist');
+    ok $status != 0, 'missing library still fails with a conflicting startup include path';
+    like $stderr, qr/FriBidi|fribidi/,
+        'conflicting startup include path does not bypass the FriBidi loader';
+}
 
 done_testing;

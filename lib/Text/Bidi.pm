@@ -140,6 +140,54 @@ sub-class, and that two or more objects with different parameters can be used
 simultaneously. If you are interested in deriving from this class, please see 
 L</SUBCLASSING>.
 
+=head1 SELECTING DISPLAYED TEXT
+
+L<Text::Bidi::Selection> maps visual selections back to the original logical
+text. For a single unwrapped paragraph:
+
+    use Text::Bidi::Selection;
+
+    my ($paragraph, $visual) = log2vis($logical);
+    my $selection = Text::Bidi::Selection->new(
+        text              => $logical,
+        visual_to_logical => $paragraph->map,
+    );
+    my $copy = $selection->selected_text($start, $end);
+
+The start offset is included and the end offset is excluded. The result is
+in logical reading order and omits unselected gaps between logical ranges.
+For terminal cells or shaped glyphs, supply the renderer's map of displayed
+positions to original character offsets; grouped entries can represent
+combining characters or ligatures.
+
+=head1 BUILDING
+
+FriBidi is an external library; its source is not bundled with this module.
+Install its development headers and library before building. FriBidi 1.0.0
+or newer is required. This interface has been tested with FriBidi 1.0.18
+(Unicode 18.0.0), SWIG 4.5.1, and Perl 5.44.0.
+
+To build a source checkout:
+
+    perl Makefile.PL
+    make
+    make test
+
+SWIG is needed to generate the wrapper in a source checkout. Release
+distributions include the generated C and Perl wrappers, so SWIG is only
+needed when regenerating them with C<make swig>. Select another executable
+with C<make swig SWIG=/path/to/swig>. Compilation flags are obtained through
+C<ExtUtils::PkgConfig> or the C<pkg-config> command; C<PKG_CONFIG> can select
+another pkg-config executable. The checkout uses development version
+C<0.00>; Dist::Zilla supplies the version when preparing a release.
+
+An additional author test accepts the official C<BidiCharacterTest.txt>
+from L<https://www.unicode.org/Public/>. Use data matching the Unicode
+version reported by L</unicode_version>:
+
+    TEXT_BIDI_CHARACTER_TEST=/path/to/BidiCharacterTest.txt \
+        prove -b xt/author/ucd-characters.t
+
 =head1 SUBCLASSING
 
 The rest of the documentation is only interesting if you would like to derive 
@@ -267,6 +315,23 @@ sub get_bidi_types {
     $self->tie_long($t)
 }
 
+=method get_bracket_types
+
+    $brackets = $tb->get_bracket_types($internal[, $types]);
+
+Return a L<Text::Bidi::Array::Long> of paired-bracket properties for the
+internal string. B<$types> defaults to L</get_bidi_types>. Wraps
+fribidi_get_bracket_types(3).
+
+=cut
+
+sub get_bracket_types {
+    my $self = S(@_);
+    my ($u, $types) = @_;
+    $types //= $self->get_bidi_types($u);
+    $self->tie_long(Text::Bidi::private::get_bracket_types($$u, $$types))
+}
+
 =func get_bidi_type_name
 
     say $tb->get_bidi_type_name($Text::Bidi::Type::LTR); # says 'LTR'
@@ -315,12 +380,17 @@ sub get_joining_type_name {
 
 =method get_par_embedding_levels
 
-   ($odir, $lvl) = $tb->get_par_embedding_levels($types[, $dir]);
+   ($odir, $lvl) = $tb->get_par_embedding_levels($types[, $dir[, $brackets]]);
 
 Return the embedding levels of the characters, whose types are given by 
 I<$types>. I<$types> is a L<Text::Bidi::Array::Long> of Bidi types, as 
 returned by L</get_bidi_types>. I<$dir> is the base paragraph direction. If 
-not given, it defaults to C<FRIBIDI_PAR_ON> (neutral).
+not given, it defaults to C<FRIBIDI_PAR_ON> (neutral). B<$brackets> is the
+array returned by L</get_bracket_types>. Supply it to enable Unicode paired
+bracket resolution (rule N0). Without it, all characters are treated as
+non-brackets, preserving the original two-argument interface.
+
+This method uses fribidi_get_par_embedding_levels_ex(3).
 
 The output is the resolved paragraph direction I<$odir>, and the 
 L<Text::Bidi::Array::Byte> array I<$lvl> of embedding levels.
@@ -331,8 +401,10 @@ sub get_par_embedding_levels {
     my $self = S(@_);
     my $bt = shift;
     my $p = shift // $Text::Bidi::private::FRIBIDI_PAR_ON;
+    my $brackets = shift // $self->tie_long([(0) x @$bt]);
     my ($lev, $par, $out) = 
-        Text::Bidi::private::get_par_embedding_levels($$bt, $p);
+        Text::Bidi::private::get_par_embedding_levels_ex($$bt, $$brackets, $p);
+    croak 'FriBidi could not compute paragraph embedding levels' if !$lev && @$bt;
     my $res = $self->tie_byte($out);
     ($par, $res)
 }
@@ -499,6 +571,7 @@ sub reorder_map {
 
     my ($lev, $elout, $mout) = Text::Bidi::private::reorder_map(
         $flags, $$bt, $off, $len, $par, $$el, $$map);
+    croak 'FriBidi could not reorder the line' if !$lev && $len;
 
     ($elout, $mout)
 }
@@ -651,6 +724,8 @@ welcome!
 L<Text::Bidi::Paragraph>
 
 L<Text::Bidi::Constants>
+
+L<Text::Bidi::Selection>
 
 L<Encode>
 

@@ -56,7 +56,7 @@ Create a new array of the given B<Type>, and initialise it with I<$data>.
 I<$data> can be either a string, which the new object then view as an array 
 of the given type, or an array reference (more precisely, anything that can 
 be dereferenced as an array), which is then packed according to the rules of 
-B<Type>. If no I<$data> is given, it defaults to 0.
+B<Type>. If no I<$data> is given, it defaults to an empty array.
 
 =cut
 
@@ -120,7 +120,7 @@ Return the size of the array represented by C<$self-E<gt>{'data'}>.
 
 sub TIEARRAY {
     my $class = shift;
-    my $data = shift || 0;
+    my $data = shift // '';
     my $self = { @_ };
     bless $self => $class;
     $self->_init($data)
@@ -148,7 +148,7 @@ sub as_scalar { \$_[0]->{'data'} }
 sub as_array { $_[0]->{'magic'} }
 
 sub CLEAR {
-    $_[0]->{'data'} = 0
+    $_[0]->{'data'} = ''
 }
 
 1;

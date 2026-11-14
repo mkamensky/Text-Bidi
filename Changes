@@ -1,5 +1,32 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Extract Text::Bidi::Selection with logical_ranges and selected_text
+          for reusable visual-to-logical selection mapping. Snapshot original
+          Unicode text and maps, including grouped glyphs and display padding.
+        * Use the shared selection module in the urxvt extension, retaining
+          terminal encoding, mouse gestures, and highlighting in the plugin.
+        * Add visual mouse selection to the urxvt bidi extension, with
+          logical-order copying, word/line selection, selection extension,
+          rectangular selections, and scrollback autoscrolling.
+        * Preserve combining and wide-character cell mappings when rendering
+          terminal text, and copy original Arabic letters instead of shaped
+          presentation forms.
+        * Keep urxvt selection highlighting in visual columns by removing its
+          selection rendition before reordering and reapplying it afterwards.
+          Add a regression for Hebrew table fields and a headless X11 test.
+        * Update the SWIG interface for FriBidi 1.0.18 and SWIG 4.5.1.
+        * Use bracket properties and get_par_embedding_levels_ex for
+          Unicode paired-bracket resolution in paragraphs.
+        * Add get_bracket_types while retaining the existing embedding-level
+          calling convention with an optional bracket-properties argument.
+        * Import fixed-width FriBidi types, expose bracket and shaping APIs,
+          and make library version strings read-only.
+        * Validate packed array lengths and line ranges, copy mutable input
+          buffers, and handle empty arrays correctly.
+        * Support building a checkout without Dist::Zilla, find pkg-config
+          without its Perl helper, and propagate SWIG generation failures.
+        * Add interface regressions and an optional Unicode character
+          conformance test.
 
 2.18      2022-07-04 11:18:31+03:00 Asia/Jerusalem
         * Add Unicode license (#143543)

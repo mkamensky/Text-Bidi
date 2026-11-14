@@ -171,8 +171,9 @@ sub _init {
     $self->{'_unicode'} = $bd->utf8_to_internal($par);
     #$self->{'_par'} = [split '', $par];
     $self->{'_types'} = $bd->get_bidi_types($self->_unicode);
+    my $brackets = $bd->get_bracket_types($self->_unicode, $self->types);
     ($self->{'dir'}, $self->{'_levels'}) =
-        $bd->get_par_embedding_levels($self->types, $self->dir);
+        $bd->get_par_embedding_levels($self->types, $self->dir, $brackets);
     $self->{'_map'} = [0..$#{$self->_unicode}];
     $self->{'_unicode'} = $self->shaped($self->{'shape'}) 
         if defined $self->{'shape'};

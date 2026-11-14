@@ -579,22 +579,10 @@ sub reorder_map {
 
 # TODO this doesn't work
 
-=for comment
+=method remove_bidi_marks
 
-method remove_bidi_marks
-
-    ($v, $to, $from, $levels) = 
-        $tb->remove_bidi_marks($v[, $to[, $from[, $levels]]])
-
-Remove the explicit bidi marks from C<$v>. The optional arguments, if given, 
-are the map from the logical to the visual string, the inverse map, and 
-embedding levels, respectively, as returned by L</reorder_map>. The inverse 
-map C<$from> can be obtained from the direct one C<$to> by a command like:
-
-    @$from[@$map] = 0..$#$map
-
-Each of the arguments can be C<undef>, in which case it will be skipped. This 
-implements step X9, see fribidi_remove_bidi_marks(3).
+This legacy method is currently nonfunctional because the private backend
+does not expose C<remove_bidi_marks>. It remains as an unsupported placeholder.
 
 =cut
 

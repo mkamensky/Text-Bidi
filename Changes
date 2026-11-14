@@ -3,6 +3,7 @@ Revision history for Perl module Text::Bidi
         * Keep FFI loader subprocess tests on the same module search paths
           as the parent, so an older installed SWIG copy cannot mask an
           invalid library override. Isolate inherited Perl startup options.
+        * Document the unsupported legacy remove_bidi_marks placeholder.
 
 3.0       2026-11-14 22:52:27+02:00 Asia/Jerusalem
         * Replace the SWIG backend with FFI::Platypus,

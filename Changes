@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+
+3.0       2026-11-14 22:52:27+02:00 Asia/Jerusalem
         * Replace the SWIG backend with FFI::Platypus,
           preserving the public API and packed-array calling conventions.
         * Load the system FriBidi shared library at runtime; building

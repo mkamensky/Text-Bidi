@@ -6,6 +6,7 @@ use FFI::CheckLib qw(find_lib_or_die);
 use IPC::Open3;
 use Symbol qw(gensym);
 use File::Temp qw(tempdir);
+use Cwd qw(abs_path);
 use Text::Bidi qw(log2vis fribidi_version_num unicode_version);
 use Text::Bidi::Constants;
 
@@ -68,18 +69,28 @@ is_deeply [Text::Bidi::private::shape_arabic(0, '', '', '')], [[], ''],
 sub load_with_library {
     my ($library) = @_;
     local $ENV{TEXT_BIDI_FRIBIDI_LIB} = $library;
-    # Reconstructing PERL5LIB can change @INC ordering, and PERL5OPT can load
-    # an installed copy before the checkout. Preserve the parent's exact paths
-    # after startup, before requiring any Text::Bidi module in the child.
+    # @INC may have changed since the parent loaded Text::Bidi. Require those
+    # exact files, and register their usual names before dependent modules load.
+    # Neither an installed frontend nor an installed backend may replace them.
+    my @sources = map {
+        abs_path($INC{$_}) or die "Cannot locate loaded module $_\n"
+    } qw(Text/Bidi/private.pm Text/Bidi.pm);
     my @inc = grep { !ref } @INC;
     local $ENV{PERL5LIB} = '';
     local $ENV{PERL5OPT} = '';
     my $err = gensym;
     my $pid = open3(my $in, my $out, $err, $^X, '-e', q{
-        BEGIN { @INC = @ARGV; @ARGV = (); }
-        require Text::Bidi;
+        BEGIN {
+            my ($backend, $frontend) = splice @ARGV, 0, 2;
+            @INC = @ARGV;
+            @ARGV = ();
+            require $backend;
+            $INC{'Text/Bidi/private.pm'} = $backend;
+            require $frontend;
+            $INC{'Text/Bidi.pm'} = $frontend;
+        }
         print scalar Text::Bidi::log2vis("abc");
-    }, '--', @inc);
+    }, '--', @sources, @inc);
     close $in;
     local $/;
     my $stdout = <$out>;
@@ -103,6 +114,11 @@ mkdir "$installed/Text" or die "Cannot create fixture directory: $!";
 open my $old, '>', "$installed/Text/Bidi.pm" or die "Cannot write fixture: $!";
 print {$old} "package Text::Bidi; sub log2vis { return 'abc' } 1;\n";
 close $old or die "Cannot close fixture: $!";
+mkdir "$installed/Text/Bidi" or die "Cannot create backend fixture directory: $!";
+open my $old_backend, '>', "$installed/Text/Bidi/private.pm"
+    or die "Cannot write backend fixture: $!";
+print {$old_backend} "die qq(Unrelated installed private backend loaded\\n);\n";
+close $old_backend or die "Cannot close backend fixture: $!";
 {
     local $ENV{PERL5OPT} = "-I$installed";
     ($status, $stdout, $stderr) = load_with_library($library);
@@ -113,6 +129,20 @@ close $old or die "Cannot close fixture: $!";
     ok $status != 0, 'missing library still fails with a conflicting startup include path';
     like $stderr, qr/FriBidi|fribidi/,
         'conflicting startup include path does not bypass the FriBidi loader';
+}
+
+# A module can already be loaded when a harness or dependency changes @INC.
+# Copying that later search order does not identify the loaded module files.
+{
+    local @INC = ($installed, @INC);
+    ($status, $stdout, $stderr) = load_with_library($library);
+    is $status, 0, 'valid library loads after the parent search path changes'
+        or diag $stderr;
+    is $stdout, 'abc', 'loaded public API survives a later search path change';
+    ($status, $stdout, $stderr) = load_with_library($library . '.does-not-exist');
+    ok $status != 0, 'missing library still fails after the parent search path changes';
+    like $stderr, qr/FriBidi|fribidi/,
+        'a later search path change does not bypass the loaded FriBidi backend';
 }
 
 done_testing;

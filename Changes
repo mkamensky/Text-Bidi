@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+
+2.19      2026-11-14 16:54:11+02:00 Asia/Jerusalem
         * Extract Text::Bidi::Selection with logical_ranges and selected_text
           for reusable visual-to-logical selection mapping. Snapshot original
           Unicode text and maps, including grouped glyphs and display padding.

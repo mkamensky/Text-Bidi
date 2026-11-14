@@ -4,7 +4,7 @@ Text::Bidi - Unicode bidi algorithm using libfribidi
 
 # VERSION
 
-version 3.0
+version 3.01
 
 # SYNOPSIS
 

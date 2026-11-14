@@ -4,7 +4,7 @@ Text::Bidi - Unicode bidi algorithm using libfribidi
 
 # VERSION
 
-version 2.18
+version 2.19
 
 # SYNOPSIS
 
@@ -146,64 +146,6 @@ Returns the version number for the fribidi library
 
 Returns the Unicode version used by the fribidi library
 
-# SELECTING DISPLAYED TEXT
-
-`Text::Bidi::Selection` maps visual selections back to the original logical
-text. For a single unwrapped paragraph:
-
-```perl
-use Text::Bidi qw(log2vis);
-use Text::Bidi::Selection;
-
-my ($paragraph, $visual) = log2vis($logical);
-my $selection = Text::Bidi::Selection->new(
-    text              => $logical,
-    visual_to_logical => $paragraph->map,
-);
-my $ranges = $selection->logical_ranges($start, $end);
-my $copy   = $selection->selected_text($start, $end);
-```
-
-Offsets include the start and exclude the end. Returned ranges use logical
-character offsets, and copied text is in logical reading order, omitting
-unselected gaps. The object snapshots its text and map, so later reordering
-does not change an existing selection.
-
-For terminal cells or shaped glyphs, supply the renderer's map of displayed
-positions to original character offsets. Each entry may be one offset, an
-array of offsets for a grapheme or ligature, or `undef`/`[]` for padding.
-Repeated offsets select the original character once. The module can be used
-without loading the native FriBidi wrapper.
-
-# BUILDING
-
-FriBidi is an external library; its source is not bundled with this module.
-Install its development headers and library before building. FriBidi 1.0.0
-or newer is required. This interface has been tested with
-[FriBidi 1.0.18](https://github.com/fribidi/fribidi/releases/tag/v1.0.18)
-(Unicode 18.0.0), [SWIG 4.5.1](https://www.swig.org/download.html), and Perl 5.44.0.
-
-To build a source checkout:
-
-    perl Makefile.PL
-    make
-    make test
-
-SWIG is needed to generate the wrapper in a source checkout. Release
-distributions include the generated C and Perl wrappers, so SWIG is only
-needed when regenerating them with `make swig`. Select another executable
-with `make swig SWIG=/path/to/swig`. Compilation flags are obtained through
-`ExtUtils::PkgConfig` or the `pkg-config` command; `PKG_CONFIG` can select
-another pkg-config executable. The checkout uses development version
-`0.00`; Dist::Zilla supplies the version when preparing a release.
-
-An additional author test accepts the official `BidiCharacterTest.txt`
-from [Unicode](https://www.unicode.org/Public/). Use data matching the Unicode
-version reported by `unicode_version()`:
-
-    TEXT_BIDI_CHARACTER_TEST=/path/to/BidiCharacterTest.txt \
-        prove -b xt/author/ucd-characters.t
-
 # SUBCLASSING
 
 The rest of the documentation is only interesting if you would like to derive 
@@ -257,9 +199,9 @@ utf8\_to\_internal(). Wraps fribidi\_get\_bidi\_types(3).
 
     $brackets = $tb->get_bracket_types($internal[, $types]);
 
-Return a `Text::Bidi::Array::Long` of paired-bracket properties for the
-internal string. `$types` defaults to `get_bidi_types`. Wraps
-`fribidi_get_bracket_types(3)`.
+Return a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong) of paired-bracket properties for the
+internal string. **$types** defaults to ["get\_bidi\_types"](#get_bidi_types). Wraps
+fribidi\_get\_bracket\_types(3).
 
 ## get\_joining\_types
 
@@ -284,13 +226,12 @@ to use [Text::Bidi::Constants](https://metacpan.org/pod/Text%3A%3ABidi%3A%3ACons
 Return the embedding levels of the characters, whose types are given by 
 _$types_. _$types_ is a [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong) of Bidi types, as 
 returned by ["get\_bidi\_types"](#get_bidi_types). _$dir_ is the base paragraph direction. If 
-not given, it defaults to `FRIBIDI_PAR_ON` (neutral). `$brackets` is the
-array returned by `get_bracket_types`. Supply it to enable Unicode paired
+not given, it defaults to `FRIBIDI_PAR_ON` (neutral). **$brackets** is the
+array returned by ["get\_bracket\_types"](#get_bracket_types). Supply it to enable Unicode paired
 bracket resolution (rule N0). Without it, all characters are treated as
 non-brackets, preserving the original two-argument interface.
 
-This method uses `fribidi_get_par_embedding_levels_ex(3)`. `Text::Bidi::Paragraph`
-and `log2vis` compute and pass bracket properties automatically.
+This method uses fribidi\_get\_par\_embedding\_levels\_ex(3).
 
 The output is the resolved paragraph direction _$odir_, and the 
 [Text::Bidi::Array::Byte](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3AByte) array _$lvl_ of embedding levels.
@@ -377,6 +318,54 @@ The output consists of the modified map **$mout** (a
 [Text::Bidi::Array::Long](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AArray%3A%3ALong)), and possibly modified embedding levels 
 **$elout**.
 
+# SELECTING DISPLAYED TEXT
+
+[Text::Bidi::Selection](https://metacpan.org/pod/Text%3A%3ABidi%3A%3ASelection) maps visual selections back to the original logical
+text. For a single unwrapped paragraph:
+
+    use Text::Bidi::Selection;
+
+    my ($paragraph, $visual) = log2vis($logical);
+    my $selection = Text::Bidi::Selection->new(
+        text              => $logical,
+        visual_to_logical => $paragraph->map,
+    );
+    my $copy = $selection->selected_text($start, $end);
+
+The start offset is included and the end offset is excluded. The result is
+in logical reading order and omits unselected gaps between logical ranges.
+For terminal cells or shaped glyphs, supply the renderer's map of displayed
+positions to original character offsets; grouped entries can represent
+combining characters or ligatures.
+
+# BUILDING
+
+FriBidi is an external library; its source is not bundled with this module.
+Install its development headers and library before building. FriBidi 1.0.0
+or newer is required. This interface has been tested with FriBidi 1.0.18
+(Unicode 18.0.0), SWIG 4.5.1, and Perl 5.44.0.
+
+To build a source checkout:
+
+    perl Makefile.PL
+    make
+    make test
+
+SWIG is needed to generate the wrapper in a source checkout. Release
+distributions include the generated C and Perl wrappers, so SWIG is only
+needed when regenerating them with `make swig`. Select another executable
+with `make swig SWIG=/path/to/swig`. Compilation flags are obtained through
+`ExtUtils::PkgConfig` or the `pkg-config` command; `PKG_CONFIG` can select
+another pkg-config executable. The checkout uses development version
+`0.00`; Dist::Zilla supplies the version when preparing a release.
+
+An additional author test accepts the official `BidiCharacterTest.txt`
+from [https://www.unicode.org/Public/](https://www.unicode.org/Public/). Use data matching the Unicode
+version reported by ["unicode\_version"](#unicode_version):
+
+    TEXT_BIDI_CHARACTER_TEST=/path/to/BidiCharacterTest.txt \
+        prove -b xt/author/ucd-characters.t
+
 method remove\_bidi\_marks
 
     ($v, $to, $from, $levels) = 
@@ -404,6 +393,8 @@ welcome!
 [Text::Bidi::Paragraph](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AParagraph)
 
 [Text::Bidi::Constants](https://metacpan.org/pod/Text%3A%3ABidi%3A%3AConstants)
+
+[Text::Bidi::Selection](https://metacpan.org/pod/Text%3A%3ABidi%3A%3ASelection)
 
 [Encode](https://metacpan.org/pod/Encode)
 

@@ -1,9 +1,10 @@
-CFLAGS = $(shell pkg-config --cflags fribidi)
-SWIG ?= swig
+.PHONY: all test
 
-private.c: swig/fribidi.i
-	$(SWIG) -perl5 -Wall $(CFLAGS) -outdir lib/Text/Bidi/ -o $@ $<
+all:
+	perl Makefile.PL
+	$(MAKE)
 
-lib/Text/Bidi/private.pm: private.c
-	@test -f $@ || $(SWIG) -perl5 -Wall $(CFLAGS) -outdir lib/Text/Bidi/ -o private.c swig/fribidi.i
+test:
+	perl Makefile.PL
+	$(MAKE) test
 

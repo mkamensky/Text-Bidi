@@ -4,7 +4,7 @@ Text::Bidi - Unicode bidi algorithm using libfribidi
 
 # VERSION
 
-version 2.19
+version 2.20
 
 # SYNOPSIS
 
@@ -40,7 +40,7 @@ All of them can be exported together using the `:all` tag.
 This module provides basic support for the Unicode bidirectional (Bidi) text 
 algorithm, for displaying text consisting of both left-to-right and 
 right-to-left written languages (such as Hebrew and Arabic.) It does so via  
-a _swig_ interface file to the _libfribidi_ library.
+an [FFI::Platypus](https://metacpan.org/pod/FFI%3A%3APlatypus) interface to the _libfribidi_ library.
 
 The fundamental purpose of the bidi algorithm is to reorder text given in 
 logical order into text in visually correct order, suitable for display using 
@@ -341,9 +341,10 @@ combining characters or ligatures.
 # BUILDING
 
 FriBidi is an external library; its source is not bundled with this module.
-Install its development headers and library before building. FriBidi 1.0.0
-or newer is required. This interface has been tested with FriBidi 1.0.18
-(Unicode 18.0.0), SWIG 4.5.1, and Perl 5.44.0.
+Install its shared library before using this module. FriBidi 1.0.0 or newer
+is required. The `ffi` branch uses [FFI::Platypus](https://metacpan.org/pod/FFI%3A%3APlatypus) through
+`Text::Bidi::private`, preserving the public API. This interface has been
+tested with FriBidi 1.0.18 (Unicode 18.0.0) and Perl 5.44.0.
 
 To build a source checkout:
 
@@ -351,13 +352,13 @@ To build a source checkout:
     make
     make test
 
-SWIG is needed to generate the wrapper in a source checkout. Release
-distributions include the generated C and Perl wrappers, so SWIG is only
-needed when regenerating them with `make swig`. Select another executable
-with `make swig SWIG=/path/to/swig`. Compilation flags are obtained through
-`ExtUtils::PkgConfig` or the `pkg-config` command; `PKG_CONFIG` can select
-another pkg-config executable. The checkout uses development version
-`0.00`; Dist::Zilla supplies the version when preparing a release.
+Install the Perl dependencies with `cpanm --installdeps .` first.
+`FFI::Platypus` 2.00 and `FFI::CheckLib` 0.28 or newer are required.
+Text::Bidi itself needs no compiler, SWIG, FriBidi headers, or `pkg-config`.
+If the shared library is in a nonstandard location, set
+`TEXT_BIDI_FRIBIDI_LIB=/path/to/libfribidi.so`.
+The checkout uses development version `0.00`; Dist::Zilla supplies the
+version when preparing a release.
 
 An additional author test accepts the official `BidiCharacterTest.txt`
 from [https://www.unicode.org/Public/](https://www.unicode.org/Public/). Use data matching the Unicode
@@ -400,7 +401,7 @@ welcome!
 
 [The fribidi library](http://fribidi.org/)
 
-[Swig](http://www.swig.org)
+[FFI::Platypus](https://metacpan.org/pod/FFI%3A%3APlatypus)
 
 [The unicode bidi algorithm](http://www.unicode.org/unicode/reports/tr9/)
 

@@ -91,7 +91,7 @@ BEGIN {
 This module provides basic support for the Unicode bidirectional (Bidi) text 
 algorithm, for displaying text consisting of both left-to-right and 
 right-to-left written languages (such as Hebrew and Arabic.) It does so via  
-a I<swig> interface file to the I<libfribidi> library.
+an L<FFI::Platypus> interface to the I<libfribidi> library.
 
 The fundamental purpose of the bidi algorithm is to reorder text given in 
 logical order into text in visually correct order, suitable for display using 
@@ -163,9 +163,10 @@ combining characters or ligatures.
 =head1 BUILDING
 
 FriBidi is an external library; its source is not bundled with this module.
-Install its development headers and library before building. FriBidi 1.0.0
-or newer is required. This interface has been tested with FriBidi 1.0.18
-(Unicode 18.0.0), SWIG 4.5.1, and Perl 5.44.0.
+Install its shared library before using this module. FriBidi 1.0.0 or newer
+is required. The C<ffi> branch uses L<FFI::Platypus> through
+C<Text::Bidi::private>, preserving the public API. This interface has been
+tested with FriBidi 1.0.18 (Unicode 18.0.0) and Perl 5.44.0.
 
 To build a source checkout:
 
@@ -173,13 +174,13 @@ To build a source checkout:
     make
     make test
 
-SWIG is needed to generate the wrapper in a source checkout. Release
-distributions include the generated C and Perl wrappers, so SWIG is only
-needed when regenerating them with C<make swig>. Select another executable
-with C<make swig SWIG=/path/to/swig>. Compilation flags are obtained through
-C<ExtUtils::PkgConfig> or the C<pkg-config> command; C<PKG_CONFIG> can select
-another pkg-config executable. The checkout uses development version
-C<0.00>; Dist::Zilla supplies the version when preparing a release.
+Install the Perl dependencies with C<cpanm --installdeps .> first.
+C<FFI::Platypus> 2.00 and C<FFI::CheckLib> 0.28 or newer are required.
+Text::Bidi itself needs no compiler, SWIG, FriBidi headers, or C<pkg-config>.
+If the shared library is in a nonstandard location, set
+C<TEXT_BIDI_FRIBIDI_LIB=/path/to/libfribidi.so>.
+The checkout uses development version C<0.00>; Dist::Zilla supplies the
+version when preparing a release.
 
 An additional author test accepts the official C<BidiCharacterTest.txt>
 from L<https://www.unicode.org/Public/>. Use data matching the Unicode
@@ -731,7 +732,7 @@ L<Encode>
 
 L<The fribidi library|http://fribidi.org/>
 
-L<Swig|http://www.swig.org>
+L<FFI::Platypus>
 
 L<The unicode bidi algorithm|http://www.unicode.org/unicode/reports/tr9/>
 

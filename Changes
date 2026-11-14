@@ -1,5 +1,11 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Replace the SWIG backend with FFI::Platypus on the ffi branch,
+          preserving the public API and packed-array calling conventions.
+        * Load the system FriBidi shared library at runtime; building
+          Text::Bidi no longer requires SWIG, FriBidi headers, or a compiler.
+        * Avoid paired-bracket characters in random bidi-class test fixtures;
+          their bracket properties can disagree with class-only test data.
 
 2.19      2026-11-14 16:54:11+02:00 Asia/Jerusalem
         * Extract Text::Bidi::Selection with logical_ranges and selected_text

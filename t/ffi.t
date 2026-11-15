@@ -1,6 +1,9 @@
 use 5.010;
 use strict;
 use warnings;
+use File::Basename qw(dirname);
+use File::Spec;
+use lib File::Spec->catdir(dirname(__FILE__), '..', 'lib');
 use Test::More;
 use FFI::CheckLib qw(find_lib_or_die);
 use IPC::Open3;
@@ -9,6 +12,17 @@ use File::Temp qw(tempdir);
 use Cwd qw(abs_path);
 use Text::Bidi qw(log2vis fribidi_version_num unicode_version);
 use Text::Bidi::Constants;
+
+# Runtime prerequisites can include an older Text::Bidi installation. Test this
+# distribution even under plain prove or a release runner with a different @INC.
+my $source_lib = File::Spec->catdir(dirname(__FILE__), '..', 'lib');
+for my $module (qw(Text/Bidi.pm Text/Bidi/private.pm)) {
+    my $expected = abs_path(File::Spec->catfile($source_lib, split m{/}, $module));
+    my $loaded = abs_path($INC{$module});
+    BAIL_OUT("$module was preloaded from $loaded; expected $expected. "
+        . 'Run tests without preloading another Text::Bidi installation.')
+        unless defined($loaded) && defined($expected) && $loaded eq $expected;
+}
 
 like fribidi_version_num(), qr/^\d+\.\d+\.\d+$/, 'runtime library version';
 like unicode_version(), qr/^\d+\.\d+\.\d+$/, 'runtime Unicode version';

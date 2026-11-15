@@ -1,5 +1,7 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+
+3.01      2026-11-15 09:36:22+02:00 Asia/Jerusalem
         * Load the distribution's own modules in ffi.t and pin subprocesses
           to those exact frontend and backend files, so an older installed
           SWIG copy cannot mask an invalid library override. Isolate inherited

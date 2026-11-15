@@ -20,7 +20,7 @@ my $test = File::Spec->rel2abs(File::Spec->catfile(dirname(__FILE__), 'ffi.t'));
 my @inc = map { ('-I', $_) } grep { !ref } @INC;
 local $ENV{PERL5OPT} = '';
 my $err = gensym;
-my $pid = open3(my $in, my $out, $err, $^X, @inc, '-I', $installed, $test);
+my $pid = open3(my $in, my $out, $err, $^X, '-I', $installed, @inc, $test);
 close $in;
 local $/;
 my $stdout = <$out> // '';

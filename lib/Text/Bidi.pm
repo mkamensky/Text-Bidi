@@ -163,8 +163,8 @@ combining characters or ligatures.
 =head1 BUILDING
 
 FriBidi is an external library; its source is not bundled with this module.
-Install its shared library before using this module. FriBidi 1.0.0 or newer
-is required. The C<ffi> branch uses L<FFI::Platypus> through
+Install its shared library before configuring this module. FriBidi 1.0.0 or
+newer is required. The C<ffi> branch uses L<FFI::Platypus> through
 C<Text::Bidi::private>, preserving the public API. This interface has been
 tested with FriBidi 1.0.18 (Unicode 18.0.0) and Perl 5.44.0.
 

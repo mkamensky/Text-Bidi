@@ -4,6 +4,11 @@ use warnings;
 ##{ $perl_prereq ? qq[use $perl_prereq;] : ''; ##}
 
 use ExtUtils::MakeMaker;
+use FFI::CheckLib 0.28 qw(check_lib_or_exit);
+
+# A missing system dependency makes the distribution inapplicable to CPAN
+# Testers. Exit successfully before generating a Makefile in that case.
+check_lib_or_exit(lib => 'fribidi') unless $ENV{TEXT_BIDI_FRIBIDI_LIB};
 
 my %WriteMakefileArgs;
 ##{ use Data::Dumper; Data::Dumper->Dump([\%default_args], [ '*WriteMakefileArgs' ]) ##}
@@ -13,6 +18,7 @@ my %WriteMakefileArgs;
     NAME => 'Text::Bidi',
     VERSION => '0.00',
     MIN_PERL_VERSION => '5.010000',
+    CONFIGURE_REQUIRES => { 'FFI::CheckLib' => '0.28' },
     PREREQ_PM => {
         'FFI::CheckLib' => '0.28',
         'FFI::Platypus' => '2.00',

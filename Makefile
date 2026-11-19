@@ -2,9 +2,8 @@
 
 all:
 	perl Makefile.PL
-	$(MAKE)
+	$(MAKE) pure_all manifypods
 
-test:
-	perl Makefile.PL
+test: all
 	$(MAKE) test
 

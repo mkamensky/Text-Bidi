@@ -1,5 +1,6 @@
 Revision history for Perl module Text::Bidi
 {{$NEXT}}
+        * Match mirror test expectations to the Unicode version used by FriBidi.
 
 3.02      2026-11-19 13:02:02+02:00 Asia/Jerusalem
         * Check for the FriBidi shared library before generating a Makefile
